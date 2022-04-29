@@ -1,33 +1,20 @@
-from napari_roi_registration import ExampleQWidget, example_magic_widget
+from napari_roi_registration import subtract_background, register_rois, process_rois
 import numpy as np
 
-# make_napari_viewer is a pytest fixture that returns a napari viewer object
-# capsys is a pytest fixture that captures stdout and stderr output streams
-def test_example_q_widget(make_napari_viewer, capsys):
-    # make viewer and add an image layer using our fixture
-    viewer = make_napari_viewer()
-    viewer.add_image(np.random.random((100, 100)))
-
-    # create our widget, passing in the viewer
-    my_widget = ExampleQWidget(viewer)
-
-    # call our widget method
-    my_widget._on_click()
-
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == "napari has 1 layers\n"
-    
-def test_example_magic_widget(make_napari_viewer, capsys):
+def test_subtract_background(make_napari_viewer, capsys):
     viewer = make_napari_viewer()
     layer = viewer.add_image(np.random.random((100, 100)))
 
-    # this time, our widget will be a MagicFactory or FunctionGui instance
-    my_widget = example_magic_widget()
+    my_widget = subtract_background()
+    
+def test_register_rois(make_napari_viewer, capsys):
+    viewer = make_napari_viewer()
+    layer = viewer.add_image(np.random.random((100, 100)))
 
-    # if we "call" this object, it'll execute our function
-    my_widget(viewer.layers[0])
+    my_widget = register_rois()
+    
+def test_process_rois(make_napari_viewer, capsys):
+    viewer = make_napari_viewer()
+    layer = viewer.add_image(np.random.random((100, 100)))
 
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == f"you have selected {layer}\n"
+    my_widget = process_rois()

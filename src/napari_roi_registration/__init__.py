@@ -8,4 +8,4 @@ except ImportError:
 
 
 
-from ._widget import ExampleQWidget, example_magic_widget
+from ._widget import subtract_background, register_rois, process_rois
