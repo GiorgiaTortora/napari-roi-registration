@@ -173,7 +173,7 @@ def register_rois(viewer: Viewer, image: Image,
         Index of the frame from which the registration process starts.
     '''
     print('Starting registration...')
-    
+    print('test this change') #TODO remove
     # remove registration points if present
     label_values = max_projection(labels_layer)
     label_colors = get_labels_color(label_values)
