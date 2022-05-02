@@ -290,22 +290,20 @@ def register_rois(viewer: Viewer, image: Image,
         finally:
             register_rois.enabled = True       
         return (rectangles, centers)
-    _register_rois() 
-    return(initial_time_index)    
+    _register_rois()    
     
 def calculate_intensity(image:Image,
                         roi_num:int,
                         points_layer:Points,
-                        labels_layer:Labels,
-                        initial_time_index
+                        labels_layer:Labels
                         ):
     """
     Calculates the mean intensity,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    # initial_time_index = register_rois.initial_time_index.value
-    #register_rois.initial_time_index.visible =False
+    initial_time_index = register_rois.initial_time_index.value
+    # register_rois.initial_time_index.visible =False
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
     stack = np.array(image.data)
