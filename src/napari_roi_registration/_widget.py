@@ -289,7 +289,7 @@ def register_rois(viewer: Viewer, image: Image,
             print(e)
         finally:
             register_rois.enabled = True       
-        return (rectangles, centers, initial_time_index)
+        return (rectangles, centers)
     _register_rois() 
     
     
@@ -297,15 +297,14 @@ def register_rois(viewer: Viewer, image: Image,
 def calculate_intensity(image:Image,
                         roi_num:int,
                         points_layer:Points,
-                        labels_layer:Labels,
-                        initial_time_index
+                        labels_layer:Labels
                         ):
     """
     Calculates the mean intensity,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    #initial_time_index = register_rois.initial_time_index.value
+    initial_time_index = register_rois.initial_time_index.value
     #register_rois.initial_time_index.visible =False
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
@@ -332,7 +331,7 @@ def calculate_intensity(image:Image,
             intensity = np.mean(selected)
             intensities[time_idx, roi_idx] = intensity
 
-    return intensities
+    return intensities, initial_time_index
 
 
 def measure_displacement(image, roi_num, points):
@@ -391,8 +390,7 @@ def process_rois(viewer: Viewer, image: Image,
                  correct_photobleaching: bool,
                  plot_results:bool = True,
                  save_results:bool = False,
-                 path: pathlib.Path = os.getcwd(),
-                 initial_time_index = register_rois.initial_time_index.value
+                 path: pathlib.Path = os.getcwd()
                  ):
     
     '''
@@ -421,9 +419,9 @@ def process_rois(viewer: Viewer, image: Image,
         time_frames_num, sy, sx = image.data.shape
         locations = registered_points.data
         roi_num = len(locations) // time_frames_num
-        intensities = calculate_intensity(image, roi_num, 
+        intensities, initial_time_index = calculate_intensity(image, roi_num, 
                                           registered_points,
-                                          labels_layer, initial_time_index)
+                                          labels_layer)
         print('initial time index:', initial_time_index)
         yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points)
 
