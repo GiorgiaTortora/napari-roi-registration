@@ -13,11 +13,8 @@ contributions:
       title: Make processing widget   
   widgets:
     - command: napari-roi-registration.make_background_widget
-      autogenerate: true
       display_name: Background Widget
     - command: napari-roi-registration.make_registration_widget
-      autogenerate: true
       display_name: Registration Widget
     - command: napari-roi-registration.make_processing_widget
-      autogenerate: true
       display_name: Processing Widget 

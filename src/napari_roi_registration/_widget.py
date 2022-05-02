@@ -41,7 +41,7 @@ def get_labels_color(labels_data):
     colors = labels_layer.get_color(colors_values)
     return colors
     
-# @magic_factory(call_button="Subtract background")
+@magic_factory(call_button="Subtract background")
 def subtract_background(viewer: Viewer, image: Image, 
                         labels: Labels):
     '''
@@ -135,8 +135,8 @@ def create_rectangles(centers, sys, sxs):
     return np.array(rectangles)
         
     
-# @magic_factory(call_button="Register ROIs",
-          # mode={"choices": ['Translation','Affine','Euclidean','Homography']})
+@magic_factory(call_button="Register ROIs",
+           mode={"choices": ['Translation','Affine','Euclidean','Homography']})
 def register_rois(viewer: Viewer, image: Image,
                     labels_layer: Labels,
                     mode: str = 'Translation',
@@ -381,7 +381,7 @@ def calculate_velocity(intensities,yx):
    
     return velocities
 
-# @magic_factory(call_button="Process registered ROIs")
+@magic_factory(call_button="Process registered ROIs")
 def process_rois(viewer: Viewer, image: Image, 
                  registered_points: Points,
                  labels_layer: Labels,
