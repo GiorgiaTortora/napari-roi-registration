@@ -332,7 +332,7 @@ def calculate_intensity(image:Image,
             intensity = np.mean(selected)
             intensities[time_idx, roi_idx] = intensity
 
-    return intensities, initial_time_index
+    return intensities
 
 
 def measure_displacement(image, roi_num, points):
@@ -392,6 +392,7 @@ def process_rois(viewer: Viewer, image: Image,
                  plot_results:bool = True,
                  save_results:bool = False,
                  path: pathlib.Path = os.getcwd(),
+                 initial_time_index = register_rois.initial_time_index.value
                  ):
     
     '''
@@ -420,9 +421,9 @@ def process_rois(viewer: Viewer, image: Image,
         time_frames_num, sy, sx = image.data.shape
         locations = registered_points.data
         roi_num = len(locations) // time_frames_num
-        intensities, initial_time_index = calculate_intensity(image, roi_num, 
+        intensities = calculate_intensity(image, roi_num, 
                                           registered_points,
-                                          labels_layer)
+                                          labels_layer, initial_time_index)
         print('initial time index:', initial_time_index)
         yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points)
 
