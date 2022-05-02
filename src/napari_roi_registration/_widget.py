@@ -295,14 +295,15 @@ def register_rois(viewer: Viewer, image: Image,
 def calculate_intensity(image:Image,
                         roi_num:int,
                         points_layer:Points,
-                        labels_layer:Labels
+                        labels_layer:Labels,
+                        initial_time_index:int = 0
                         ):
     """
     Calculates the mean intensity,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    initial_time_index = register_rois.initial_time_index.value
+    # initial_time_index = register_rois.initial_time_index.value
     # register_rois.initial_time_index.visible =False
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
@@ -388,7 +389,8 @@ def process_rois(viewer: Viewer, image: Image,
                  correct_photobleaching: bool,
                  plot_results:bool = True,
                  save_results:bool = False,
-                 path: pathlib.Path = os.getcwd()
+                 path: pathlib.Path = os.getcwd(),
+                 initial_time_index:int = 0
                  ):
     
     '''
