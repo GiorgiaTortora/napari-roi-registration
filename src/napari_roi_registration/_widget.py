@@ -145,7 +145,7 @@ def register_rois(viewer: Viewer, image: Image,
                     bbox_zoom = 1,
                     register_entire_image:bool = False,
                     show_registered_stack:bool = False,
-                    initial_time_index:int = 0,
+                    initial_time_index:int = 0
                     ):
     '''
     Registers rectangular rois chosen on image as the bound box of the labels.
@@ -158,7 +158,7 @@ def register_rois(viewer: Viewer, image: Image,
     labels_layer: Labels
         The labels drawn in this layer will be the rois to be registered.
     mode: str
-        The type of motion of the image.
+        The type of registration.
     median_filter_size:int
         Size of the median filter.
     scale: float
@@ -173,7 +173,6 @@ def register_rois(viewer: Viewer, image: Image,
         Index of the frame from which the registration process starts.
     '''
     print('Starting registration...')
-    print('test this change') #TODO remove
     # remove registration points if present
     label_values = max_projection(labels_layer)
     label_colors = get_labels_color(label_values)
@@ -290,7 +289,7 @@ def register_rois(viewer: Viewer, image: Image,
             print(e)
         finally:
             register_rois.enabled = True       
-        return (rectangles, centers)
+        return (rectangles, centers, initial_time_index)
     _register_rois() 
     
     
@@ -299,13 +298,14 @@ def calculate_intensity(image:Image,
                         roi_num:int,
                         points_layer:Points,
                         labels_layer:Labels,
+                        initial_time_index
                         ):
     """
     Calculates the mean intensity,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    initial_time_index = register_rois.initial_time_index.value
+    #initial_time_index = register_rois.initial_time_index.value
     #register_rois.initial_time_index.visible =False
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
