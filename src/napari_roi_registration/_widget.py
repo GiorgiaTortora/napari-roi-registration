@@ -189,12 +189,12 @@ def register_rois(viewer: Viewer, image: Image,
     time_frames_num, sy, sx = stack.shape
         
     def add_rois(params):
-            import np.matlib
+            import numpy.matlib
             rectangles = params[0]
             _centers = params[1]
             rectangles = rectangles.reshape((roi_num*time_frames_num,4,3))
             centers = _centers.reshape((roi_num*time_frames_num,3))
-            color_array= np.matlib.repmat(label_colors,len(rectangles)//roi_num,1)
+            color_array= numpy.matlib.repmat(label_colors,len(rectangles)//roi_num,1)
             
             points_layer_name = f'centroids_{image.name}'
             rectangles_name = f'rectangles_{image.name}'
