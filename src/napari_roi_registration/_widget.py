@@ -203,7 +203,7 @@ def register_rois(viewer: Viewer, image: Image,
             if rectangles_name in viewer.layers:
                 viewer.layers.remove(rectangles_name)
             shapes = viewer.add_shapes(np.array(rectangles[0]),
-                              edge_width=4,
+                              edge_width=1,
                               edge_color=color_array[0],
                               face_color=[1,1,1,0],
                               name = rectangles_name
@@ -391,7 +391,7 @@ def process_rois(viewer: Viewer, image: Image,
                  correct_photobleaching: bool,
                  plot_results:bool = True,
                  save_results:bool = False,
-                 path: pathlib.Path = os.getcwd()+"\\test.xlsx",
+                 path: pathlib.Path = os.getcwd(),
                  ):
     
     '''
@@ -441,7 +441,7 @@ def process_rois(viewer: Viewer, image: Image,
             #plot_data(spectra, colors, "frequency index", "power spectrum", plot_type = 'log')
         
         directory, filename = os.path.split(path)
-        newpath = directory +'\\'+image.name+'_150px_t.xlsx'
+        newpath = directory +'\\'+image.name
         
         if save_results:
             save_in_excel(filename_xls = newpath,
