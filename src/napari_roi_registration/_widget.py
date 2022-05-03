@@ -441,6 +441,7 @@ def process_rois(viewer: Viewer, image: Image,
 
 processing_widget = process_rois()
 register_widget = register_rois()
+background_widget = subtract_background()
 
 
 if __name__ == '__main__':
@@ -448,6 +449,8 @@ if __name__ == '__main__':
     import napari
     viewer = napari.Viewer()
     
+    viewer.window.add_dock_widget(background_widget, name = 'Background Subtraction',
+                                  area='right', add_vertical_stretch=True)
     viewer.window.add_dock_widget(register_widget, name = 'ROIs Registration',
                                   area='right', add_vertical_stretch=True)
     register_widget.initial_time_index.visible =False
