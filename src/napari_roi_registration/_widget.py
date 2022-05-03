@@ -1,9 +1,25 @@
-from registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
-from registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
-from registration_utils import calculate_spectrum, correct_decay, stack_registration,apply_warp_to_stack
+"""
+Created on Tue May  3 16:58:58 2022
+
+@author: Giorgia Tortora and Andrea Bassi @Polimi
+
+Napari widget for the registration of regions of interests (ROI) in a time lapse acquistion 
+and processing of the intensity of the registered data.
+
+The widget uses user-defined labels, constructs a rectangular ROI around the label 
+and registers the ROI in each time frame.
+
+Based on opencv registration functions.
+
+Registration of multiple ROIs is supported.  
+
+"""
+
+from .registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
+from .registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
+from .registration_utils import calculate_spectrum, correct_decay
 import numpy as np
 from magicgui import magic_factory
-import napari
 from napari import Viewer
 from napari.layers import Image, Points, Labels
 from skimage.measure import regionprops
@@ -154,23 +170,25 @@ def register_rois(viewer: Viewer, image: Image,
     Parameters
     ----------
     image: napari.layers.Image
-        The image to do the registration on.
+        The image stack (time,y,x) to be registered.
     labels_layer: Labels
-        The labels drawn in this layer will be the rois to be registered.
+        The labels will define the rectangular ROIs to be registered.
     mode: str
-        The type of registration.
+        The type of cv2 registration.
     median_filter_size:int
-        Size of the median filter.
+        Size of the median filter applied before registration.
     scale: float
-        Rescaling factor of the image.
+        Rescaling factor of the image for the registation
+        Does not affect the registered image scale.
     bbox_zoom: int
-        Determines the size of the boxes that will enclose the rois and will be registered.
+        The bounding boxes encloding the ROIs are zoomed by this factor.
     register_entire_image:bool
-        To do the registration of the entire image and not only of the selected rois.
+        If True, the entire image is registered around the bounding box.
     show_registered_stack:bool
-        To show the registered stack as a new image layer.
+        If True,  shows the registered stacks as new image layers.
     initial_time_index:int
         Index of the frame from which the registration process starts.
+        Not visible by default.
     '''
     print('Starting registration...')
     # remove registration points if present
@@ -178,8 +196,7 @@ def register_rois(viewer: Viewer, image: Image,
     label_colors = get_labels_color(label_values)
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
-    register_rois.initial_time_index.value = initial_time_index
-    #register_rois.initial_time_index.visible =False
+    register_widget.initial_time_index.value = initial_time_index
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
                                                                       bbox_zoom) 
@@ -302,8 +319,7 @@ def calculate_intensity(image:Image,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    initial_time_index = register_rois.initial_time_index.value
-    # register_rois.initial_time_index.visible =False
+    initial_time_index = register_widget.initial_time_index.value
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
     stack = np.array(image.data)
@@ -315,8 +331,6 @@ def calculate_intensity(image:Image,
     label_rois = select_rois_from_image(labels_data,
                                         locations[initial_location:initial_location+roi_num],
                                         roi_sizey, roi_sizex)
-    # TODO use correct location, related to the reference plane
-    
     intensities = np.zeros([st, roi_num])
     for time_idx in range(st):
         for roi_idx in range(roi_num):
@@ -329,7 +343,7 @@ def calculate_intensity(image:Image,
             intensity = np.mean(selected)
             intensities[time_idx, roi_idx] = intensity
 
-    return intensities, initial_time_index
+    return intensities
 
 
 def measure_displacement(image, roi_num, points):
@@ -352,35 +366,6 @@ def measure_displacement(image, roi_num, points):
     dr = np.sqrt( np.sum( (dxy)**2, axis=2) )
     return xy, deltar, dxy, dr
 
-def calculate_velocity(intensities,yx):
-    
-    '''
-    Calculate the velocity considering the distance between each roi
-    (starting from the second one) and the first roi (roi of reference).
-    The coordinates of the rois and the the time indices used for
-    calculating the velocity are taken in correspondence of the maximum
-    intensity value.
-    '''
-    max_indices = []
-    coordinates = []
-    velocities = []
-    
-    rois_num = intensities.shape[1]
-    
-    max_indices = np.argmax(intensities, axis= 0)   
-    
-    for roi_idx in range(rois_num):
-        coordinates.append(yx[max_indices[roi_idx],roi_idx])    
-        
-    for roi_idx in range(rois_num-1):
-        distance  = np.sqrt( np.sum((coordinates[roi_idx+1]-coordinates[0])**2)) #TODO calcolare la velocità rispetto alla roi 0 
-        delta_t = (max_indices[roi_idx+1]-max_indices[0])
-        #print(distance, delta_t)
-        velocity = distance/delta_t
-        velocities.append(velocity)
-   
-    return velocities
-
 @magic_factory(call_button="Process registered ROIs")
 def process_rois(viewer: Viewer, image: Image, 
                  registered_points: Points,
@@ -388,26 +373,27 @@ def process_rois(viewer: Viewer, image: Image,
                  correct_photobleaching: bool,
                  plot_results:bool = True,
                  save_results:bool = False,
-                 path: pathlib.Path = os.getcwd()
+                 path: pathlib.Path = os.getcwd()+'temp.xls'
                  ):
     
     '''
     Parameters
     ----------
     image: napari.layers.Image
-        The image to take in account during processing.
+        The image to take into account during processing.
+        It is normally a previously registered image. 
     registered_points: napari.layers.Points
-        The points to take in account during processing
+        The center of the ROIs to take into account during processing
     labels_layer: napari.layers.Labels
-        The labels to take in account during processing
+        The labels previously used for registration. The intensity is calculated on the labels only. 
     correct_photobleaching: bool
-        To correct the effect of photobleaching in the intensity data.
+        If True photobleaching correction is appleid to the the intensities.
     plot_results:bool
-        To show the plots of the collected data in the console.
+        If Ture, shows the plots of the collected data with matplotlib in the console.
     save_results:bool
-        To create an excel file with all the collected data.
+        If True, creates an excel file with processing results.
     path: str
-        Where to save the data. 
+        Folder with filename of the excel file. 
     '''
     
     warnings.filterwarnings('ignore')
@@ -417,14 +403,10 @@ def process_rois(viewer: Viewer, image: Image,
         time_frames_num, sy, sx = image.data.shape
         locations = registered_points.data
         roi_num = len(locations) // time_frames_num
-        intensities, initial_time_index = calculate_intensity(image, roi_num, 
+        intensities = calculate_intensity(image, roi_num, 
                                           registered_points,
                                           labels_layer)
-        print('initial time index:', initial_time_index)
         yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points)
-
-        velocities = calculate_velocity(intensities, yx)
-        print('Velocities:', *velocities)
         
         if correct_photobleaching:
             intensities = correct_decay(intensities)
@@ -435,13 +417,12 @@ def process_rois(viewer: Viewer, image: Image,
             colors = get_labels_color(label_values)
             plot_data(deltar, colors, "time index", "displacement (px)")
             plot_data(intensities, colors, "time index", "mean intensity")
-            #plot_data(spectra, colors, "frequency index", "power spectrum", plot_type = 'log')
         
-        directory, filename = os.path.split(path)
-        newpath = directory +'\\'+image.name
+        #directory, filename = os.path.split(path)
+        #newpath = directory +'\\'+image.name
         
         if save_results:
-            save_in_excel(filename_xls = newpath,
+            save_in_excel(filename_xls = path,
                           sheet_name = 'Roi',
                           x = yx[...,1], 
                           y = yx[...,0],
@@ -458,20 +439,20 @@ def process_rois(viewer: Viewer, image: Image,
         process_rois.enabled = True
     print(f'... processed {time_frames_num} frames.')
 
-# if __name__ == '__main__':
-#     pass
+processing_widget = process_rois()
+register_widget = register_rois()
+
+
+if __name__ == '__main__':
     
-#     viewer = napari.Viewer()
+    import napari
+    viewer = napari.Viewer()
     
-#     viewer.window.add_dock_widget(subtract_background, name = 'Subtract background',
-#                                   area='right', add_vertical_stretch=True)
-#     # viewer.window.add_dock_widget(translate_label, name = 'Translate label',
-#     #                               area='right', add_vertical_stretch=True)
-#     viewer.window.add_dock_widget(register_rois, name = 'ROIs Registration',
-#                                   area='right', add_vertical_stretch=True)
-#     register_rois.initial_time_index.visible =False
-#     viewer.window.add_dock_widget(process_rois, name = 'Processing',
-#                                   area='right')
-#     warnings.filterwarnings('ignore')
+    viewer.window.add_dock_widget(register_widget, name = 'ROIs Registration',
+                                  area='right', add_vertical_stretch=True)
+    register_widget.initial_time_index.visible =False
+    viewer.window.add_dock_widget(processing_widget, name = 'Processing',
+                                  area='right')
+    warnings.filterwarnings('ignore')
     
-#     napari.run() 
+    napari.run() 
