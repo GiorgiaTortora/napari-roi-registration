@@ -439,10 +439,9 @@ def process_rois(viewer: Viewer, image: Image,
         process_rois.enabled = True
     print(f'... processed {time_frames_num} frames.')
 
-processing_widget = process_rois()
-register_widget = register_rois()
 background_widget = subtract_background()
-
+register_widget = register_rois()
+processing_widget = process_rois()
 
 if __name__ == '__main__':
     
