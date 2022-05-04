@@ -86,6 +86,7 @@ def subtract_background(viewer: Viewer, image: Image,
       
     @thread_worker(connect={'yielded': update_image})
     def _subtract_background():
+        from skimage.measure import regionprops
         try:
             subtract_background.enabled = False
             warnings.filterwarnings('ignore')
@@ -110,6 +111,7 @@ def subtract_background(viewer: Viewer, image: Image,
     _subtract_background()
     
 def get_rois_props(label_data, t=0, bbox_zoom = 1):
+    from skimage.measure import regionprops
     centroids = []  
     roi_sizes_x = []
     roi_sizes_y = []
