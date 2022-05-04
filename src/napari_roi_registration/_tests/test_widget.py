@@ -4,7 +4,7 @@ def test_subtract_background(make_napari_viewer, capsys):
     viewer = make_napari_viewer()
     # layer = viewer.add_image(np.random.random((100, 100)))
 
-    my_widget = subtract_background()
+    my_widget = subtract_background(viewer)
     
 # def test_register_rois(make_napari_viewer, capsys):
 #     viewer = make_napari_viewer()
