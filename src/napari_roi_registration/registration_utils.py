@@ -5,7 +5,7 @@ Created on Fri Nov 26 11:35:46 2021
 @author: Andrea Bassi, Giorgia Tortora @Polimi
 """
 
-import cv2
+# import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
