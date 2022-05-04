@@ -1,4 +1,4 @@
-from .napari_roi_registration import subtract_background, register_rois, process_rois
+from napari_roi_registration import processing_widget, register_widget, background_widget
 import numpy as np
 
 def test_subtract_background(make_napari_viewer, capsys):
