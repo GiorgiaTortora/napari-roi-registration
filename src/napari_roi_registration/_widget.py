@@ -22,7 +22,6 @@ import numpy as np
 from magicgui import magic_factory
 from napari import Viewer
 from napari.layers import Image, Points, Labels
-# from skimage.measure import regionprops
 import pathlib
 import os
 from napari.qt.threading import thread_worker

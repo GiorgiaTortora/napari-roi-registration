@@ -7,7 +7,13 @@
 [![codecov](https://codecov.io/gh/GiorgiaTortora/napari-roi-registration/branch/main/graph/badge.svg)](https://codecov.io/gh/GiorgiaTortora/napari-roi-registration)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-roi-registration)](https://napari-hub.org/plugins/napari-roi-registration)
 
-A plugin to perform roi registration.
+A Napari plugin for the registration of regions of interests (ROI) in a time lapse acquistion and processing of the intensity of the registered data.
+
+The widget uses user-defined labels, constructs a rectangular ROI around the label and registers the ROI in each time frame.
+
+Based on opencv registration functions.
+
+Registration of multiple ROIs is supported.  
 
 ----------------------------------
 
