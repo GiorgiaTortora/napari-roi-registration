@@ -43,7 +43,7 @@ def max_projection(label_layer):
     
 
 def get_labels_values(labels_data):
-
+    from skimage.measure import regionprops
     labels_props = regionprops(label_image=labels_data) # intensity_image=image0)    
     label_values = []
     for prop in labels_props:

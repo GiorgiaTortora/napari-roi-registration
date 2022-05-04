@@ -33,6 +33,7 @@ def normalize_stack(stack, **kwargs):
 
 
 def filter_image(img, sigma):
+    import cv2
     if sigma >0:
         sigma = (sigma//2)*2+1 # sigma must be odd in cv2
         #filtered = cv2.GaussianBlur(img,(sigma,sigma),cv2.BORDER_DEFAULT)
@@ -353,6 +354,7 @@ def plot_data(data, colors, xlabel, ylabel,  plot_type='lin'):
     '''
     data are organized as a list (time) of list (roi), or as a 2D numpy array
     '''
+    import matplotlib.pyplot as plt
     data = np.array(data)
     roi_num = data.shape[1]
     legend = [f'ROI {roi_idx}' for roi_idx in range(roi_num)]
@@ -382,6 +384,7 @@ def plot_data(data, colors, xlabel, ylabel,  plot_type='lin'):
 
 
 def save_in_excel(filename_xls, sheet_name, **kwargs):
+    import pandas as pd
 
     headers = list(kwargs.keys())
     values = np.array(list(kwargs.values())) # consider using np.fromiter
