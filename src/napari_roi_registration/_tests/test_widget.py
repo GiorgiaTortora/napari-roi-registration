@@ -1,11 +1,10 @@
-from napari_roi_registration import subtract_background, register_rois, process_rois
-import numpy as np
+from napari_roi_registration import subtract_background
 
 def test_subtract_background(make_napari_viewer, capsys):
     viewer = make_napari_viewer()
     # layer = viewer.add_image(np.random.random((100, 100)))
 
-    background_widget = subtract_background()
+    my_widget = subtract_background()
     
 # def test_register_rois(make_napari_viewer, capsys):
 #     viewer = make_napari_viewer()
