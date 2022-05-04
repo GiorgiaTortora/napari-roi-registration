@@ -8,4 +8,4 @@ except ImportError:
 
 
 
-from ._widget import register_rois
+from ._widget import subtract_background, register_rois, process_rois
