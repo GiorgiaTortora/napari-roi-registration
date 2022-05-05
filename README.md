@@ -27,6 +27,8 @@ and review the napari docs for plugin developers:
 https://napari.org/plugins/stable/index.html
 -->
 
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/roi_registration.gif)
+
 ## Installation
 
 You can install `napari-roi-registration` via [pip]:
