@@ -53,7 +53,7 @@ To install latest development version :
 
 ### Registration Widget
 
-1. Create a new Labels layer and draw one or more labels where you want to get a ROI (Region Of Interest). Every color represent a different label which is a different ROI.
+1. Create a new Labels layer and draw one or more labels where you want to select a ROI (Region Of Interest). Every color represent a different label which is a different ROI.
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture1.png)
 
@@ -63,10 +63,13 @@ To install latest development version :
 
 ### Processing Widget
 
+Pushing the `Process registered ROIs` button processing of the registered ROIs will be performed. Information about the intensity of the registered data and the displacement of the ROIs will be given. In the IPhyton console the displacement vs time index and the mean intensity vs time index plots will appear.
+Choosing the `save results` option an excel file containg information about the ROIs positions, displacement and intensity at each frame will be generated. 
+
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture3.png)
 
 
-## Contributing
+## Contributing 
 
 Contributions are very welcome. Tests can be run with [tox], please ensure
 the coverage at least stays the same before you submit a pull request.
