@@ -9,11 +9,12 @@
 
 A Napari plugin for the registration of regions of interests (ROI) in a time lapse acquistion and processing of the intensity of the registered data.
 
-The widget uses user-defined labels, constructs a rectangular ROI around the label and registers the ROI in each time frame.
+The ROI are defined by the use using labels layers. Registration of multiple ROIs is supported.  
 
-Based on opencv registration functions.
-
-Registration of multiple ROIs is supported.  
+The `Registration` widget uses the user-defined labels, constructs a rectangular ROI around them and registers the ROI in each time frame.
+The `Processing` widget measures the ROI displacements and extract the average intensity of the ROI, calculated the label area.
+The `Subtract background` widget subtracts a background on each frame, calculated as the mean intensity on a label layer. 
+Tipically useful when ambient light affects the measurement.  
 
 ----------------------------------
 
@@ -47,7 +48,7 @@ To install latest development version :
 
 1. Create a new Labels layer and draw a label on the area from which to get the background. 
 
-![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture4.png)
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture4.png)
 
 2. Push the `Subtract background` button. A new image layer will appear in the viewer. This layer contains the image to which the background was subtracted.
 
@@ -55,18 +56,18 @@ To install latest development version :
 
 1. Create a new Labels layer and draw one or more labels where you want to select a ROI (Region Of Interest). Each color in the same Labels layer represent a different label which is a different ROI.
 
-![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture1.png)
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture1.png)
 
 2. Push the `Register ROIs` button: registration of the entire stack will be performed. When the registration is finished two new layers will appear in the viewer. One layer contains the centroids of the drawn labels while the other contains the bounding boxes encloding the ROIs.
 
-![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture2.png)
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture2.png)
 
 ### Processing Widget
 
 Pushing the `Process registered ROIs` button processing of the registered ROIs will be performed. Information about the intensity of the registered data and the displacement of the ROIs will be given. In the IPhyton console the displacement vs time index and the mean intensity vs time index plots will appear.
 Choosing the `save results` option an excel file containg information about the ROIs positions, displacement and intensity at each frame will be generated. 
 
-![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture3.png)
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture3.png)
 
 
 ## Contributing 

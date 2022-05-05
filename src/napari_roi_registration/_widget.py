@@ -1,5 +1,5 @@
 """
-Created on Tue May  3 16:58:58 2022
+Created on Tue May 3 16:58:58 2022
 
 @author: Giorgia Tortora and Andrea Bassi @Polimi
 
@@ -256,8 +256,7 @@ def register_rois(viewer: Viewer, image: Image,
                     #im.translate = [0,int(y-sizey/2),int(x-sizex/2)]
                
             print('... ending registration.')
-    
-        
+           
         
     @thread_worker(connect={'returned':add_rois})
     def _register_rois():    
@@ -309,6 +308,7 @@ def register_rois(viewer: Viewer, image: Image,
             register_rois.enabled = True       
         return (rectangles, centers)
     _register_rois()    
+    
     
 def calculate_intensity(image:Image,
                         roi_num:int,
@@ -367,6 +367,7 @@ def measure_displacement(image, roi_num, points):
     dr = np.sqrt( np.sum( (dxy)**2, axis=2) )
     return xy, deltar, dxy, dr
 
+
 @magic_factory(call_button="Process registered ROIs")
 def process_rois(viewer: Viewer, image: Image, 
                  registered_points: Points,
@@ -421,7 +422,6 @@ def process_rois(viewer: Viewer, image: Image,
         
         #directory, filename = os.path.split(path)
         #newpath = directory +'\\'+image.name
-        
         if save_results:
             save_in_excel(filename_xls = path,
                           sheet_name = 'Roi',

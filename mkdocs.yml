@@ -1,9 +1,8 @@
 site_name: napari-roi-registration
-site_description: A plugin to perform roi registration.
+site_description: A plugin to perform ROI registration.
 site_author: Andrea Bassi and Giorgia Tortora
 
 theme: readthedocs
-
 
 repo_url: https://github.com/GiorgiaTortora/napari-roi-registration
 
