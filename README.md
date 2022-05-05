@@ -39,9 +39,14 @@ To install latest development version :
 
     pip install git+https://github.com/GiorgiaTortora/napari-roi-registration.git
 
-##Usage
+## Usage
 
 
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture1.png)
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture2.png)
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture3.png)
 
 
 ## Contributing
