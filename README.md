@@ -47,15 +47,15 @@ To install latest development version :
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture4.png)
 
-2. Push the 'Subtract background' button. A new image layer will appear in the viewer. This layer contains the image to which the backgroun was subtracted.
+2. Push the `Subtract background` button. A new image layer will appear in the viewer. This layer contains the image to which the background was subtracted.
 
 ### Registration Widget
 
-1. Create a new Labels layer and draw one or more labels where you want to get a ROI (Region Of Interest). Every color represent a different label aka a different ROI.
+1. Create a new Labels layer and draw one or more labels where you want to get a ROI (Region Of Interest). Every color represent a different label which is a different ROI.
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture1.png)
 
-2. Push the 'Register ROIs' button: registration of the entire stack will be performed. When the registration is finished two new layers will appear in the Viewer. One layer contains the centroids of the drawn labels while the other contains the bounding boxes encloding the ROIs.
+2. Push the `Register ROIs` button: registration of the entire stack will be performed. When the registration is finished two new layers will appear in the viewer. One layer contains the centroids of the drawn labels while the other contains the bounding boxes encloding the ROIs.
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/Picture2.png)
 
