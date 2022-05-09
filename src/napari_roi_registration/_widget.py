@@ -197,7 +197,7 @@ def register_rois(viewer: Viewer, image: Image,
     label_colors = get_labels_color(label_values)
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
-    make_registration_widget.initial_time_index.value = initial_time_index
+    napari-roi-registration.make_registration_widget.initial_time_index.value = initial_time_index
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
                                                                       bbox_zoom) 
@@ -320,7 +320,7 @@ def calculate_intensity(image:Image,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    initial_time_index = make_registration_widget.initial_time_index.value
+    initial_time_index = napari-roi-registration.make_registration_widget.initial_time_index.value
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
     stack = np.array(image.data)
