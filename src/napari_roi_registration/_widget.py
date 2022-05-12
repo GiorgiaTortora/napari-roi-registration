@@ -15,9 +15,9 @@ Registration of multiple ROIs is supported.
 
 """
 
-from .registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
-from .registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
-from .registration_utils import calculate_spectrum, correct_decay
+from napari_roi_registration.registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
+from napari_roi_registration.registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
+from napari_roi_registration.registration_utils import calculate_spectrum, correct_decay
 import numpy as np
 from magicgui import magic_factory
 from napari import Viewer
