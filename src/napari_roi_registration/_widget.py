@@ -197,7 +197,7 @@ def register_rois(viewer: Viewer, image: Image,
     label_colors = get_labels_color(label_values)
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
-    register_rois.initial_time_index.value = initial_time_index
+    register_widget.initial_time_index.value = initial_time_index
     print('Registration initial time index:', initial_time_index)
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
@@ -321,7 +321,7 @@ def calculate_intensity(image:Image,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    initial_time_index = register_rois.initial_time_index.value
+    initial_time_index = register_widget.initial_time_index.value
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
     stack = np.array(image.data)
@@ -455,7 +455,7 @@ if __name__ == '__main__':
                                   area='right', add_vertical_stretch=True)
     viewer.window.add_dock_widget(register_widget, name = 'ROIs Registration',
                                   area='right', add_vertical_stretch=True)
-    make_registration_widget.initial_time_index.visible =False
+    register_widget.initial_time_index.visible =False
     viewer.window.add_dock_widget(processing_widget, name = 'Processing',
                                   area='right')
     warnings.filterwarnings('ignore')
