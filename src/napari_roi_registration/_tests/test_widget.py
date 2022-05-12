@@ -15,7 +15,7 @@ def test_register_rois(make_napari_viewer, capsys):
 
     register_widget = register_rois()
     
-    register_widget(image_layer, label_layer)
+    register_widget(viewer, image_layer, label_layer)
     
     assert len(viewer.layers) == 4 
     assert type(viewer.layers[3]) == Points
