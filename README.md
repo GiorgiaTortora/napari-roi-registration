@@ -14,6 +14,7 @@ The ROI are defined using a Labels layer. Registration of multiple ROIs is suppo
 The `Registration` widget uses the user-defined labels, constructs a rectangular ROI around each of them and registers the ROIs in each time frame.
 The `Processing` widget measures the ROI displacements and extract the average intensity of the ROI, calculated in the label area.
 The `Subtract background` widget subtracts a background on each frame, calculated as the mean intensity on a Labels layer. 
+
 Tipically useful when ambient light affects the measurement.  
 
 ----------------------------------
