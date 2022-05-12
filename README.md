@@ -9,11 +9,11 @@
 
 A Napari plugin for the registration of regions of interests (ROI) in a time lapse acquistion and processing of the intensity of the registered data.
 
-The ROI are defined by the use using labels layers. Registration of multiple ROIs is supported.  
+The ROI are defined using a Labels layer. Registration of multiple ROIs is supported.  
 
-The `Registration` widget uses the user-defined labels, constructs a rectangular ROI around them and registers the ROI in each time frame.
-The `Processing` widget measures the ROI displacements and extract the average intensity of the ROI, calculated the label area.
-The `Subtract background` widget subtracts a background on each frame, calculated as the mean intensity on a label layer. 
+The `Registration` widget uses the user-defined labels, constructs a rectangular ROI around each of them and registers the ROIs in each time frame.
+The `Processing` widget measures the ROI displacements and extract the average intensity of the ROI, calculated in the label area.
+The `Subtract background` widget subtracts a background on each frame, calculated as the mean intensity on a Labels layer. 
 Tipically useful when ambient light affects the measurement.  
 
 ----------------------------------
@@ -44,14 +44,6 @@ To install latest development version :
 
 ## Usage
 
-### Background Widget
-
-1. Create a new Labels layer and draw a label on the area from which to get the background. 
-
-![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture4.png)
-
-2. Push the `Subtract background` button. A new image layer will appear in the viewer. This layer contains the image to which the background was subtracted.
-
 ### Registration Widget
 
 1. Create a new Labels layer and draw one or more labels where you want to select a ROI (Region Of Interest). Each color in the same Labels layer represent a different label which is a different ROI.
@@ -69,6 +61,13 @@ Choosing the `save results` option an excel file containg information about the 
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture3.png)
 
+### Background Widget
+
+1. Create a new Labels layer and draw a label on the area from which to get the background. 
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture4.png)
+
+2. Push the `Subtract background` button. A new image layer will appear in the viewer. This layer contains the image to which the background was subtracted.
 
 ## Contributing 
 
