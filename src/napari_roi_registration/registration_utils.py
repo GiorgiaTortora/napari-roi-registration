@@ -6,6 +6,7 @@ Created on Fri Nov 26 11:35:46 2021
 """
 
 import numpy as np
+import cv2
 
 def normalize_stack(stack, **kwargs):
     '''
