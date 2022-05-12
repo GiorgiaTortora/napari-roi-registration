@@ -26,7 +26,7 @@ import pathlib
 import os
 from napari.qt.threading import thread_worker
 import warnings
-
+from skimage.measure import regionprops
 
 def max_projection(label_layer):
     '''
@@ -41,7 +41,6 @@ def max_projection(label_layer):
     
 
 def get_labels_values(labels_data):
-    from skimage.measure import regionprops
     labels_props = regionprops(label_image=labels_data) # intensity_image=image0)    
     label_values = []
     for prop in labels_props:
@@ -84,7 +83,7 @@ def subtract_background(viewer: Viewer, image: Image,
       
     @thread_worker(connect={'yielded': update_image})
     def _subtract_background():
-        from skimage.measure import regionprops
+        
         try:
             subtract_background.enabled = False
             warnings.filterwarnings('ignore')
@@ -109,7 +108,6 @@ def subtract_background(viewer: Viewer, image: Image,
     _subtract_background()
     
 def get_rois_props(label_data, t=0, bbox_zoom = 1):
-    from skimage.measure import regionprops
     centroids = []  
     roi_sizes_x = []
     roi_sizes_y = []
