@@ -198,6 +198,7 @@ def register_rois(viewer: Viewer, image: Image,
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
     register_rois.initial_time_index.value = initial_time_index
+    print('Registration initial time index:', initial_time_index)
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
                                                                       bbox_zoom) 
@@ -344,7 +345,7 @@ def calculate_intensity(image:Image,
             intensity = np.mean(selected)
             intensities[time_idx, roi_idx] = intensity
 
-    return intensities
+    return intensities, initial_time_index
 
 
 def measure_displacement(image, roi_num, points):
@@ -405,9 +406,10 @@ def process_rois(viewer: Viewer, image: Image,
         time_frames_num, sy, sx = image.data.shape
         locations = registered_points.data
         roi_num = len(locations) // time_frames_num
-        intensities = calculate_intensity(image, roi_num, 
+        intensities, initial_time_index = calculate_intensity(image, roi_num, 
                                           registered_points,
                                           labels_layer)
+        print('Processing initial time index:', initial_time_index)
         yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points)
         
         if correct_photobleaching:
