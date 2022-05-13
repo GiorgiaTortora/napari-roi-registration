@@ -20,6 +20,7 @@ from napari_roi_registration.registration_utils import align_with_registration, 
 from napari_roi_registration.registration_utils import calculate_spectrum, correct_decay
 import numpy as np
 from magicgui import magic_factory
+import napari
 from napari import Viewer
 from napari.layers import Image, Points, Labels
 import pathlib
@@ -27,6 +28,7 @@ import os
 from napari.qt.threading import thread_worker
 import warnings
 from skimage.measure import regionprops
+import cv2
 
 def max_projection(label_layer):
     '''
@@ -443,11 +445,10 @@ background_widget = subtract_background()
 register_widget = register_rois()
 processing_widget = process_rois()
 
-import cv2
 
 if __name__ == '__main__':
     
-    import napari
+    #import napari
     viewer = napari.Viewer()
     #import cv2
     
