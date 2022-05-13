@@ -6,14 +6,14 @@ def test_register_rois(make_napari_viewer, capsys):
     
     viewer = make_napari_viewer()
         
-    # image_layer = viewer.add_image(np.random.random((10, 200, 100)))
+    image_layer = viewer.add_image(np.random.random((10, 200, 100)))
     
-    # label_data = np.zeros((200,100), dtype=np.int8)
-    # label_data[50:60, 50:60] = 1
-    # label_data[150:170, 70:80] = 2
-    # label_layer = viewer.add_labels(label_data)
+    label_data = np.zeros((200,100), dtype=np.int8)
+    label_data[50:60, 50:60] = 1
+    label_data[150:170, 70:80] = 2
+    label_layer = viewer.add_labels(label_data)
 
-    # register_widget = register_rois()
+    register_widget = register_rois()
     
     # register_widget(viewer, viewer.layers[0], viewer.layers[1])
     

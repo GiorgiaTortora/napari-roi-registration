@@ -6,7 +6,14 @@ Created on Fri Nov 26 11:35:46 2021
 """
 
 import numpy as np
-#import cv2
+
+# this is a fix to issue #1 due to a Qt/napari depencencies handling problems
+try:
+    import cv2
+except:
+    print('something went wrong importing cv2')
+    
+
 
 def normalize_stack(stack, **kwargs):
     '''
@@ -404,5 +411,5 @@ def save_in_excel(filename_xls, sheet_name, **kwargs):
         
     writer.save()
     
-import cv2  
+    
     
