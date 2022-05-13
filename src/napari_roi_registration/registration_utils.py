@@ -8,10 +8,10 @@ Created on Fri Nov 26 11:35:46 2021
 import numpy as np
 
 # this is a fix to issue #1 due to a Qt/napari depencencies handling problems
-try:
-    import cv2
-except:
-    print('something went wrong importing cv2')
+# try:
+#     import cv2
+# except:
+#     print('something went wrong importing cv2')
     
 
 
