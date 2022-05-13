@@ -447,6 +447,7 @@ if __name__ == '__main__':
     
     import napari
     viewer = napari.Viewer()
+    import cv2
     
     viewer.window.add_dock_widget(background_widget, name = 'Background Subtraction',
                                   area='right', add_vertical_stretch=True)
