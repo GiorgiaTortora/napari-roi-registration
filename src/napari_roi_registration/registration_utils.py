@@ -7,13 +7,6 @@ Created on Fri Nov 26 11:35:46 2021
 
 import numpy as np
 
-# this is a fix to issue #1 due to a Qt/napari depencencies handling problems
-# try:
-#     import cv2
-# except:
-#     print('something went wrong importing cv2')
-    
-
 
 def normalize_stack(stack, **kwargs):
     '''
@@ -38,7 +31,7 @@ def normalize_stack(stack, **kwargs):
 
 
 def filter_image(img, sigma):
-
+    import cv2
     if sigma >0:
         sigma = (sigma//2)*2+1 # sigma must be odd in cv2
         #filtered = cv2.GaussianBlur(img,(sigma,sigma),cv2.BORDER_DEFAULT)
@@ -52,7 +45,7 @@ def filter_image(img, sigma):
     
 
 def filter_images(imgs, sigma):
-
+    import cv2
     filtered_list = []
     for img in imgs:
         if sigma >0:
@@ -77,7 +70,7 @@ def select_rois_with_bbox(im, bboxes):
   
 
 def resize_stack(stack,scale):
-
+    import cv2
     sz,sy,sx = stack.shape
     height = int(sy * scale)
     width = int(sx * scale)
@@ -89,7 +82,7 @@ def resize_stack(stack,scale):
 
 
 def resize(imgs, scale):
-
+    import cv2
     resized= []
     for img in imgs:
         width = int(img.shape[1] * scale)
@@ -168,7 +161,7 @@ def select_rois_from_stack(input_stack, positions, sizesy, sizesx):
 
 
 def apply_warp_to_stack(stack, wm):
-
+    import cv2
     sz,sy,sx = stack.shape
     moved = np.zeros_like(stack)
     for idx in range(sz):
@@ -191,7 +184,7 @@ def stack_registration(stack, z_idx, c_idx = 0, mode = 'Euclidean'):
     Returns a 3D or 4D resistered stack
     
     '''
-
+    import cv2
     def cv2_reg(ref,im, sy, sx, mode = mode):
 
         warp_mode_dct = {'Translation' : cv2.MOTION_TRANSLATION,
@@ -255,7 +248,7 @@ def stack_registration(stack, z_idx, c_idx = 0, mode = 'Euclidean'):
    
     
 def align_with_registration(next_rois, previous_rois, mode ='Translation'):  
-
+    import cv2
     warp_mode_dct = {'Translation' : cv2.MOTION_TRANSLATION,
                      'Affine' : cv2.MOTION_AFFINE,
                      'Euclidean' : cv2.MOTION_EUCLIDEAN,

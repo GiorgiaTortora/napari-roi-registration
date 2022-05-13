@@ -1,8 +1,8 @@
-from napari_roi_registration import register_rois
+from napari_roi_registration import register_rois, subtract_background
 import numpy as np
-from napari.layers import Points
+from napari.layers import Points, Image
 
-def test_register_rois(make_napari_viewer, capsys):
+def test_subtract_background(make_napari_viewer, capsys):
     
     viewer = make_napari_viewer()
         
@@ -13,11 +13,11 @@ def test_register_rois(make_napari_viewer, capsys):
     label_data[150:170, 70:80] = 2
     label_layer = viewer.add_labels(label_data)
 
-    register_widget = register_rois()
+    background_widget = subtract_background()
     
-    # register_widget(viewer, viewer.layers[0], viewer.layers[1])
+    background_widget(viewer, viewer.layers[0], viewer.layers[1])
     
-    # assert len(viewer.layers) == 4 
-    # assert type(viewer.layers[3]) == Points
+    assert len(viewer.layers) == 3 
+    assert type(viewer.layers[2]) == Image
     
     
