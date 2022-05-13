@@ -27,7 +27,6 @@ import os
 from napari.qt.threading import thread_worker
 import warnings
 from skimage.measure import regionprops
-import cv2
 
 def max_projection(label_layer):
     '''
@@ -443,6 +442,8 @@ def process_rois(viewer: Viewer, image: Image,
 background_widget = subtract_background()
 register_widget = register_rois()
 processing_widget = process_rois()
+
+import cv2
 
 if __name__ == '__main__':
     
