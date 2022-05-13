@@ -27,6 +27,7 @@ import os
 from napari.qt.threading import thread_worker
 import warnings
 from skimage.measure import regionprops
+import cv2
 
 def max_projection(label_layer):
     '''
@@ -447,7 +448,7 @@ if __name__ == '__main__':
     
     import napari
     viewer = napari.Viewer()
-    import cv2
+    #import cv2
     
     viewer.window.add_dock_widget(background_widget, name = 'Background Subtraction',
                                   area='right', add_vertical_stretch=True)
