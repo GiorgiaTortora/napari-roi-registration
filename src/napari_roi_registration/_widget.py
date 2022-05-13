@@ -443,7 +443,7 @@ background_widget = subtract_background()
 register_widget = register_rois()
 processing_widget = process_rois()
 
-import cv2
+# import cv2
 
 if __name__ == '__main__':
     
