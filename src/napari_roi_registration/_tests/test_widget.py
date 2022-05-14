@@ -10,7 +10,6 @@ def test_subtract_background(make_napari_viewer, capsys):
     
     label_data = np.zeros((200,100), dtype=np.int8)
     label_data[50:60, 50:60] = 1
-    # label_data[150:170, 70:80] = 2
     label_layer = viewer.add_labels(label_data)
 
     background_widget = subtract_background()
@@ -21,3 +20,22 @@ def test_subtract_background(make_napari_viewer, capsys):
     # assert type(viewer.layers[2]) == Image
     
     
+def test_register_rois(make_napari_viewer, capsys):
+    
+    viewer = make_napari_viewer()
+        
+    image_layer = viewer.add_image(np.random.random((10, 200, 100)))
+    
+    label_data = np.zeros((200,100), dtype=np.int8)
+    label_data[50:60, 50:60] = 1
+    label_data[150:170, 70:80] = 2
+    label_layer = viewer.add_labels(label_data)
+    
+    viewer.dims.current_step = (5, 0, 0)
+
+    registration_widget = register_rois()
+    
+    index = registration_widget(viewer)
+    
+    assert index == 5 
+    # assert type(viewer.layers[2]) == Image

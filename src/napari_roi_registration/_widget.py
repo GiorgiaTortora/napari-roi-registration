@@ -158,8 +158,7 @@ def register_rois(viewer: Viewer, image: Image,
                     scale = 0.5,
                     bbox_zoom = 1,
                     register_entire_image:bool = False,
-                    show_registered_stack:bool = False,
-                    initial_time_index:int = 0
+                    show_registered_stack:bool = False
                     ):
     '''
     Registers rectangular rois chosen on image as the bound box of the labels.
@@ -184,9 +183,6 @@ def register_rois(viewer: Viewer, image: Image,
         If True, the entire image is registered around the bounding box.
     show_registered_stack:bool
         If True,  shows the registered stacks as new image layers.
-    initial_time_index:int
-        Index of the frame from which the registration process starts.
-        Not visible by default.
     '''
     print('Starting registration...')
     # remove registration points if present
@@ -194,8 +190,7 @@ def register_rois(viewer: Viewer, image: Image,
     label_colors = get_labels_color(label_values)
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
-    register_widget.initial_time_index.value = initial_time_index
-    print('Registration initial time index:', initial_time_index)
+    widgets_shared_variables.initial_time_index = initial_time_index
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
                                                                       bbox_zoom) 
@@ -306,7 +301,7 @@ def register_rois(viewer: Viewer, image: Image,
             register_rois.enabled = True       
         return (rectangles, centers)
     _register_rois()    
-    
+    return widgets_shared_variables.initial_time_index 
     
 def calculate_intensity(image:Image,
                         roi_num:int,
@@ -318,7 +313,7 @@ def calculate_intensity(image:Image,
     within rectangular Rois of size roi_size, centered in points_layer,
     taking into account only the pixels that are in one of the labels of labels_layer
     """
-    initial_time_index = register_widget.initial_time_index.value
+    initial_time_index = widgets_shared_variables.initial_time_index
     labels_data = max_projection(labels_layer)
     label_values = get_labels_values(labels_data)
     stack = np.array(image.data)
@@ -406,7 +401,6 @@ def process_rois(viewer: Viewer, image: Image,
         intensities, initial_time_index = calculate_intensity(image, roi_num, 
                                           registered_points,
                                           labels_layer)
-        print('Processing initial time index:', initial_time_index)
         yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points)
         
         if correct_photobleaching:
@@ -439,23 +433,27 @@ def process_rois(viewer: Viewer, image: Image,
         process_rois.enabled = True
     print(f'... processed {time_frames_num} frames.')
 
-background_widget = subtract_background()
-register_widget = register_rois()
-processing_widget = process_rois()
 
-# import cv2
+from dataclasses import dataclass
+@dataclass
+class Shared_variables:
+    initial_time_index: int = 0
+
+widgets_shared_variables = Shared_variables(initial_time_index=0)  
+
 
 if __name__ == '__main__':
     
     import napari
     viewer = napari.Viewer()
-    #import cv2
+    background_widget = subtract_background()
+    register_widget = register_rois()
+    processing_widget = process_rois()
     
     viewer.window.add_dock_widget(background_widget, name = 'Background Subtraction',
                                   area='right', add_vertical_stretch=True)
     viewer.window.add_dock_widget(register_widget, name = 'ROIs Registration',
                                   area='right', add_vertical_stretch=True)
-    register_widget.initial_time_index.visible =False
     viewer.window.add_dock_widget(processing_widget, name = 'Processing',
                                   area='right')
     warnings.filterwarnings('ignore')
