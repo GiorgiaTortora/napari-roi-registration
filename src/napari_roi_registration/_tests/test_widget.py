@@ -9,6 +9,7 @@ def test_subtract_background(make_napari_viewer, capsys):
     image_layer = viewer.add_image(im_data)
     
     label_data = np.zeros((200,100), dtype=np.int8)
+    label_data[50:60, 50:60] = 1
     label_layer = viewer.add_labels(label_data)
 
     background_widget = subtract_background()
