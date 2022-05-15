@@ -303,8 +303,7 @@ def register_rois(viewer: Viewer, image: Image,
             register_rois.enabled = True       
         return (rectangles, centers)
     _register_rois() 
-    print('Initial_time_index', widgets_shared_variables.initial_time_index )
-    return widgets_shared_variables.initial_time_index 
+    
     
 def calculate_intensity(image:Image,
                         roi_num:int,
