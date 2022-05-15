@@ -41,4 +41,4 @@ def test_register_rois(make_napari_viewer, capsys):
     
     registration_widget(viewer, viewer.layers[0], viewer.layers[1])
     out, err = capsys.readouterr()
-    assert err != '' 
+    assert err == '' 
