@@ -12,9 +12,10 @@ A Napari plugin for the registration of regions of interests (ROI) in a time lap
 The ROI are defined using a Labels layer. Registration of multiple ROIs is supported.  
 
 The `Registration` widget uses the user-defined labels, constructs a rectangular ROI around each of them and registers the ROIs in each time frame.
-The `Processing` widget measures the ROI displacements and extract the average intensity of the ROI, calculated in the label area.
-The `Subtract background` widget subtracts a background on each frame, calculated as the mean intensity on a Labels layer. 
 
+The `Processing` widget measures the ROI displacements and extracts the average intensity of the ROI, calculated on the area of the labels.
+
+The `Subtract background` widget subtracts a background on each frame, calculated as the mean intensity on a Labels layer.
 Tipically useful when ambient light affects the measurement.  
 
 ----------------------------------
@@ -47,24 +48,26 @@ To install latest development version :
 
 ### Registration Widget
 
-1. Create a new Labels layer and draw one or more labels where you want to select a ROI (Region Of Interest). Each color in the same Labels layer represent a different label which is a different ROI.
+1. Create a new Labels layer and draw one or more labels where you want to select a ROI (Region Of Interest). Each color in the same Labels layer represents a different label which will correspond to a different ROI.
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture1.png)
 
-2. Push the `Register ROIs` button: registration of the entire stack will be performed. When the registration is finished two new layers will appear in the viewer. One layer contains the centroids of the drawn labels while the other contains the bounding boxes encloding the ROIs.
+2. Push the `Register ROIs` button: registration of the entire stack will be performed. When the registration is finished two new layers will appear in the viewer. One layer contains the centroids of the drawn labels while the other contains the bounding boxes enclosing the ROIs.
+The registration starts from the currently selected frame. If `register entire stack` is selected, the registration will create a new layer for each label, with the registered ROI stacks.
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture2.png)
 
 ### Processing Widget
 
-Pushing the `Process registered ROIs` button processing of the registered ROIs will be performed. Information about the intensity of the registered data and the displacement of the ROIs will be given. In the IPhyton console the displacement vs time index and the mean intensity vs time index plots will appear.
-Choosing the `save results` option an excel file containg information about the ROIs positions, displacement and intensity at each frame will be generated. 
+Pushing the `Process registered ROIs` button, the registered ROIs will be analyzed. The intensity of the registered ROIs (measured on the area of the selected label) and the displacement of the ROIs will be calculated.
+If `plot results` is selected the plot of displacement vs time index and mean intensity vs time index will appear in the Console.
+Choosing the `save results` option, an excel file containing ROIs positions, displacements and intensities, will be saved. 
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture3.png)
 
 ### Background Widget
 
-1. Create a new Labels layer and draw a label on the area from which to get the background. 
+1. Create a new Labels layer and draw a label on the area where you want to calculate the background. 
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/raw/main/images/Picture4.png)
 
