@@ -54,6 +54,7 @@ def get_labels_color(labels_data):
     colors = labels_layer.get_color(colors_values)
     return colors
     
+
 @magic_factory(call_button="Subtract background")
 def subtract_background(viewer: Viewer, image: Image, 
                         labels: Labels):
@@ -448,7 +449,6 @@ if __name__ == '__main__':
     background_widget = subtract_background()
     register_widget = register_rois()
     processing_widget = process_rois()
-    
     viewer.window.add_dock_widget(background_widget, name = 'Background Subtraction',
                                   area='right', add_vertical_stretch=True)
     viewer.window.add_dock_widget(register_widget, name = 'ROIs Registration',
@@ -456,5 +456,4 @@ if __name__ == '__main__':
     viewer.window.add_dock_widget(processing_widget, name = 'Processing',
                                   area='right')
     warnings.filterwarnings('ignore')
-    
     napari.run() 
