@@ -191,6 +191,8 @@ def register_rois(viewer: Viewer, image: Image,
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
     widgets_shared_variables.initial_time_index = initial_time_index
+    print('Initial_time_index', widgets_shared_variables.initial_time_index )
+    
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
                                                                       bbox_zoom) 
@@ -301,7 +303,7 @@ def register_rois(viewer: Viewer, image: Image,
             register_rois.enabled = True       
         return (rectangles, centers)
     _register_rois() 
-    print(widgets_shared_variables.initial_time_index )
+    print('Initial_time_index', widgets_shared_variables.initial_time_index )
     return widgets_shared_variables.initial_time_index 
     
 def calculate_intensity(image:Image,

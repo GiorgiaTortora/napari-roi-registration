@@ -39,7 +39,7 @@ def test_register_rois(make_napari_viewer, capsys):
 
     registration_widget = register_rois()
     
-    # registration_widget(viewer, viewer.layers[0], viewer.layers[1])
+    registration_widget(viewer, viewer.layers[0], viewer.layers[1])
     
     # #assert index == 5 
     # assert type(viewer.layers[2]) == Image
