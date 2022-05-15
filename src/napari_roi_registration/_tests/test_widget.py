@@ -17,7 +17,7 @@ def test_subtract_background(make_napari_viewer, capsys):
     background_widget(viewer, viewer.layers[0], viewer.layers[1])
     
     captured = capsys.readouterr()
-    assert captured.err == None
+    assert captured.err == ''
     assert 'background' in captured.out 
     
     
