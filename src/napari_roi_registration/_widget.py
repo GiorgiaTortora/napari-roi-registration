@@ -191,8 +191,7 @@ def register_rois(viewer: Viewer, image: Image,
     labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
     widgets_shared_variables.initial_time_index = initial_time_index
-    print('Initial_time_index', widgets_shared_variables.initial_time_index )
-    
+    print('... with initial time index:', widgets_shared_variables.initial_time_index)
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                       initial_time_index,
                                                                       bbox_zoom) 
@@ -248,10 +247,8 @@ def register_rois(viewer: Viewer, image: Image,
                     if registered_roi_name in viewer.layers:
                             viewer.layers.remove(registered_roi_name)
                     viewer.add_image(np.array(registered), name= registered_roi_name)
-                    #im.translate = [0,int(y-sizey/2),int(x-sizex/2)]
-               
+                    #im.translate = [0,int(y-sizey/2),int(x-sizex/2)]         
             print('... ending registration.')
-           
         
     @thread_worker(connect={'returned':add_rois})
     def _register_rois():    
