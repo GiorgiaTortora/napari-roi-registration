@@ -2,21 +2,21 @@ from napari_roi_registration import register_rois, subtract_background
 import numpy as np
 from napari.layers import Points, Image
 
-# def test_subtract_background(make_napari_viewer, capsys):
+def test_subtract_background(make_napari_viewer, capsys):
     
-#     viewer = make_napari_viewer()
-    # im_data = np.random.random((10, 200, 100))   
-    # image_layer = viewer.add_image(im_data)
+    viewer = make_napari_viewer()
+    im_data = np.random.random((10, 200, 100))   
+    image_layer = viewer.add_image(im_data)
     
-    # label_data = np.zeros((200,100), dtype=np.int8)
-    # label_layer = viewer.add_labels(label_data)
+    label_data = np.zeros((200,100), dtype=np.int8)
+    label_layer = viewer.add_labels(label_data)
 
-    # background_widget = subtract_background()
+    background_widget = subtract_background()
     
-    # background_widget(viewer, viewer.layers[0], viewer.layers[1])
+    background_widget(viewer, viewer.layers[0], viewer.layers[1])
     
-    # assert len(viewer.layers) == 3 
-    # assert type(viewer.layers[2]) == Image
+    assert len(viewer.layers) == 3 
+    assert type(viewer.layers[2]) == Image
     
     
 def test_register_rois(make_napari_viewer, capsys):
@@ -38,7 +38,7 @@ def test_register_rois(make_napari_viewer, capsys):
 
     registration_widget = register_rois()
     
-    registration_widget(viewer, image_layer, label_layer)
+    # registration_widget(viewer, image_layer, label_layer)
     
-    #assert index == 5 
+    # #assert index == 5 
     # assert type(viewer.layers[2]) == Image
