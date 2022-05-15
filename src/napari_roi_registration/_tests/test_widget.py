@@ -15,13 +15,9 @@ def test_subtract_background(make_napari_viewer, capsys):
     background_widget = subtract_background()
     
     background_widget(viewer, viewer.layers[0], viewer.layers[1])
-    
     captured = capsys.readouterr()
     assert captured.err == ''
-    assert 'Correcting background on frame' in captured.out 
     
-    # assert len(viewer.layers) == 3 
-    # assert type(viewer.layers[2]) == Image
     
     
 # def test_register_rois(make_napari_viewer, capsys):
