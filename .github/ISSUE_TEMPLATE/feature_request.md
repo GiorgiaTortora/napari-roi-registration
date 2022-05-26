@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: ":rocket: Feature request"
 about: Submit a proposal for a new feature to improve the plugin.
 title: ''
 labels: ''

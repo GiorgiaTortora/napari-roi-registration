@@ -1,5 +1,5 @@
 ---
-name: Documentation
+name: ":books: Documentation"
 about: Report an issue with napari documentation.
 title: ''
 labels: ''
