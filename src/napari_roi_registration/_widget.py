@@ -368,7 +368,7 @@ def process_rois(viewer: Viewer, image: Image,
                  correct_photobleaching: bool,
                  plot_results:bool = True,
                  save_results:bool = False,
-                 path: pathlib.Path = os.getcwd()+'temp.xls'
+                 path: pathlib.Path = os.getcwd()+'\\temp.xls'
                  ):
     
     '''
