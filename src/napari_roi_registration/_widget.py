@@ -253,52 +253,47 @@ def register_rois(viewer: Viewer, image: Image,
         
     @thread_worker(connect={'returned':add_rois})
     def _register_rois():    
-        try:
-            register_rois.enabled = False
-            warnings.filterwarnings('ignore')        
-            resized = resize_stack(stack, scale)
-            resized, _vmin, _vmax = normalize_stack(resized)
-            image0 = resized[initial_time_index,...]
-            
-            initial_positions = rescale_position(real_initial_positions,scale)
-            roi_sy = [int(ri*scale) for ri in real_roi_sy]
-            roi_sx = [int(ri*scale) for ri in real_roi_sx]
-            previous_rois = select_rois_from_image(image0, initial_positions, roi_sy,roi_sx)
-            previous_rois = filter_images(previous_rois, median_filter_size)
-    
-            rectangles = np.zeros([time_frames_num,roi_num,4,3]) 
-            centers = np.zeros([time_frames_num,roi_num,3])
-             # register forwards
-            next_positions = initial_positions.copy()
+        
+        warnings.filterwarnings('ignore')        
+        resized = resize_stack(stack, scale)
+        resized, _vmin, _vmax = normalize_stack(resized)
+        image0 = resized[initial_time_index,...]
+        
+        initial_positions = rescale_position(real_initial_positions,scale)
+        roi_sy = [int(ri*scale) for ri in real_roi_sy]
+        roi_sx = [int(ri*scale) for ri in real_roi_sx]
+        previous_rois = select_rois_from_image(image0, initial_positions, roi_sy,roi_sx)
+        previous_rois = filter_images(previous_rois, median_filter_size)
+
+        rectangles = np.zeros([time_frames_num,roi_num,4,3]) 
+        centers = np.zeros([time_frames_num,roi_num,3])
+         # register forwards
+        next_positions = initial_positions.copy()
+        real_next_positions = rescale_position(next_positions,1/scale)
+        centers[initial_time_index,:,:] = np.array(real_next_positions)
+        rectangles[initial_time_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
+        for t_index in range(initial_time_index+1, time_frames_num, 1):
+            next_rois = select_rois_from_image(resized[t_index,...], next_positions, roi_sy,roi_sx)
+            next_rois = filter_images(next_rois, median_filter_size)
+            dx, dy, _wm = align_with_registration(next_rois, previous_rois,
+                                             mode)
+            next_positions = update_position(next_positions, dz = 1,
+                                             dx_list = dx, dy_list = dy)
             real_next_positions = rescale_position(next_positions,1/scale)
-            centers[initial_time_index,:,:] = np.array(real_next_positions)
-            rectangles[initial_time_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
-            for t_index in range(initial_time_index+1, time_frames_num, 1):
-                next_rois = select_rois_from_image(resized[t_index,...], next_positions, roi_sy,roi_sx)
-                next_rois = filter_images(next_rois, median_filter_size)
-                dx, dy, _wm = align_with_registration(next_rois, previous_rois,
-                                                 mode)
-                next_positions = update_position(next_positions, dz = 1,
-                                                 dx_list = dx, dy_list = dy)
-                real_next_positions = rescale_position(next_positions,1/scale)
-                centers[t_index,:,:] = np.array(real_next_positions)
-                rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
-            # register backwards  
-            next_positions = initial_positions.copy()    
-            for t_index in range(initial_time_index-1, -1, -1):
-                next_rois = select_rois_from_image(resized[t_index,...], next_positions, roi_sy,roi_sx)
-                next_rois = filter_images(next_rois, median_filter_size)
-                dx, dy, _wm = align_with_registration(next_rois,previous_rois,
-                                                  mode)
-                next_positions = update_position(next_positions, dz = -1,
-                                                  dx_list = dx, dy_list = dy)
-                real_next_positions = rescale_position(next_positions,1/scale)
-                centers[t_index,:,:] = np.array(real_next_positions)
-                rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
-        except Exception as e:
-            print(e)
-        finally:
-            register_rois.enabled = True       
+            centers[t_index,:,:] = np.array(real_next_positions)
+            rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
+        # register backwards  
+        next_positions = initial_positions.copy()    
+        for t_index in range(initial_time_index-1, -1, -1):
+            next_rois = select_rois_from_image(resized[t_index,...], next_positions, roi_sy,roi_sx)
+            next_rois = filter_images(next_rois, median_filter_size)
+            dx, dy, _wm = align_with_registration(next_rois,previous_rois,
+                                              mode)
+            next_positions = update_position(next_positions, dz = -1,
+                                              dx_list = dx, dy_list = dy)
+            real_next_positions = rescale_position(next_positions,1/scale)
+            centers[t_index,:,:] = np.array(real_next_positions)
+            rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
         return (rectangles, centers)
     _register_rois() 
     
