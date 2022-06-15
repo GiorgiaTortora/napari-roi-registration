@@ -223,11 +223,11 @@ def register_rois(viewer: Viewer, image: Image,
             # shapes.add_rectangles(np.array(rectangles[1:]),
                                   # edge_color=color_array[1:])
             
-            viewer.add_points(np.array(centers),
-                                  edge_color='green',
-                                  face_color=[1,1,1,0],
-                                  name = points_layer_name
-                                  )
+            # viewer.add_points(np.array(centers),
+            #                       edge_color='green',
+            #                       face_color=[1,1,1,0],
+            #                       name = points_layer_name
+            #                       )
             
             if show_registered_stack:
                 for roi_idx in range(roi_num):
