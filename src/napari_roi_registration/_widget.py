@@ -251,7 +251,7 @@ def register_rois(viewer: Viewer, image: Image,
                     #im.translate = [0,int(y-sizey/2),int(x-sizex/2)]         
             print('... ending registration.')
         
-    @thread_worker(connect={'returned':add_rois})
+    # @thread_worker(connect={'returned':add_rois})
     def _register_rois():    
         
         warnings.filterwarnings('ignore')        
