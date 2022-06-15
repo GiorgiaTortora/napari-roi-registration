@@ -214,14 +214,14 @@ def register_rois(viewer: Viewer, image: Image,
                 viewer.layers.remove(points_layer_name)
             if rectangles_name in viewer.layers:
                 viewer.layers.remove(rectangles_name)
-            shapes = viewer.add_shapes(np.array(rectangles[0]),
-                              edge_width=1,
-                              edge_color=color_array[0],
-                              face_color=[1,1,1,0],
-                              name = rectangles_name
-                              )
-            shapes.add_rectangles(np.array(rectangles[1:]),
-                                  edge_color=color_array[1:])
+            # shapes = viewer.add_shapes(np.array(rectangles[0]),
+            #                   edge_width=1,
+            #                   edge_color=color_array[0],
+            #                   face_color=[1,1,1,0],
+            #                   name = rectangles_name
+            #                   )
+            # shapes.add_rectangles(np.array(rectangles[1:]),
+                                  # edge_color=color_array[1:])
             
             viewer.add_points(np.array(centers),
                                   edge_color='green',
