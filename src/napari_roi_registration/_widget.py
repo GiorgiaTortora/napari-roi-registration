@@ -201,7 +201,7 @@ def register_rois(viewer: Viewer, image: Image,
     time_frames_num, sy, sx = stack.shape
         
     def add_rois(params):
-        try:
+        
             import numpy.matlib
             rectangles = params[0]
             _centers = params[1]
@@ -244,7 +244,7 @@ def register_rois(viewer: Viewer, image: Image,
                     if registered_roi_name in viewer.layers:
                             viewer.layers.remove(registered_roi_name)
                     viewer.add_image(np.array(registered), name= registered_roi_name)
-        finally:
+        
             print('... ending registration.')
         
     @thread_worker(connect={'returned':add_rois})
