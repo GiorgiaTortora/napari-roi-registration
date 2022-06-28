@@ -201,13 +201,13 @@ def register_rois(viewer: Viewer, image: Image,
     time_frames_num, sy, sx = stack.shape
         
     def add_rois(params):
+        
             import numpy.matlib
             rectangles = params[0]
             _centers = params[1]
             rectangles = rectangles.reshape((roi_num*time_frames_num,4,3))
             centers = _centers.reshape((roi_num*time_frames_num,3))
             color_array= numpy.matlib.repmat(label_colors,len(rectangles)//roi_num,1)
-            
             points_layer_name = f'centroids_{image.name}'
             rectangles_name = f'rectangles_{image.name}'
             if points_layer_name in viewer.layers:
@@ -222,7 +222,6 @@ def register_rois(viewer: Viewer, image: Image,
                               )
             shapes.add_rectangles(np.array(rectangles[1:]),
                                    edge_color=color_array[1:])
-            
             viewer.add_points(np.array(centers),
                                   edge_color='green',
                                   face_color=[1,1,1,0],
@@ -234,21 +233,18 @@ def register_rois(viewer: Viewer, image: Image,
                     pos = _centers[:,roi_idx,:]
                     y = pos[initial_time_index,1]
                     x = pos[initial_time_index,2]
-                    
                     sizey = real_roi_sy[roi_idx] 
                     sizex = real_roi_sx[roi_idx]
                     if register_entire_image:
                         sizex = min(sx-x,x)*2
                         sizey = min(sy-y,y)*2
-                    
                     registered = select_rois_from_stack(stack, pos, 
                                                          [int(sizey)], [int(sizex)])
-            
                     registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
                     if registered_roi_name in viewer.layers:
                             viewer.layers.remove(registered_roi_name)
                     viewer.add_image(np.array(registered), name= registered_roi_name)
-                    #im.translate = [0,int(y-sizey/2),int(x-sizex/2)]         
+        
             print('... ending registration.')
         
     @thread_worker(connect={'returned':add_rois})
