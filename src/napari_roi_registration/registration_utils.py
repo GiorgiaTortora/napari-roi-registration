@@ -98,9 +98,10 @@ def rescale_position(pos_list,scale):
     next_pos_list = []
     for pos in pos_list:
         z1 = pos[0]
-        y1 = pos[1]*scale
-        x1 = pos[2]*scale
-        next_pos_list.append([z1,y1,x1])  
+        c1 = pos[1]
+        y1 = pos[2]*scale
+        x1 = pos[3]*scale
+        next_pos_list.append([z1,c1,y1,x1])  
         
     return next_pos_list
 
@@ -112,8 +113,8 @@ def select_rois_from_image(input_image, positions, sizesy, sizesx):
     
     for pos,sizey,sizex in zip(positions,sizesy,sizesx):
         #t = int(pos[0])
-        y = int(pos[1])
-        x = int(pos[2])
+        y = int(pos[2])
+        x = int(pos[3])
         half_sizey = sizey//2
         half_sizex = sizex//2
         # output= input_image[y-half_sizey:y+half_sizey,
@@ -299,9 +300,10 @@ def update_position(pos_list, dz, dx_list, dy_list ):
     next_pos_list = []
     for pos, dx, dy in zip(pos_list, dx_list, dy_list):
         z1 = pos[0] + dz
-        y1 = pos[1] + dy
-        x1 = pos[2] + dx
-        next_pos_list.append([z1,y1,x1])  
+        c1 = pos[1]
+        y1 = pos[2] + dy
+        x1 = pos[3] + dx
+        next_pos_list.append([z1,c1,y1,x1])  
         
     return next_pos_list
 
