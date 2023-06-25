@@ -34,9 +34,7 @@ def max_projection(label_layer):
     Compresses a 3D label layer into a 2D array and returns the values.
     Selects the label with the highest value in case of overlap.
     '''
-    t0 = time.time()
     values = np.asarray(label_layer.data).astype(int)
-    print('time', time.time()-t0)  
     if values.ndim == 3:
         values = np.max(values, axis = 0)
     elif values.ndim == 4:
@@ -267,19 +265,16 @@ def register_rois(viewer: Viewer, image: Image,
                 if show_registered_stack: #TODO
                     for roi_idx in range(roi_num):
                         pos = _centers[:,roi_idx,:]
-                        print('pos:', pos.shape)
                         if stack_dim == 3:
                             stack = original_stack
                             y = pos[initial_time_index,1]
                             x = pos[initial_time_index,2]
                             no_channel_pos = pos
                         elif stack_dim == 4:
-                            print('original stack', original_stack.shape)
                             stack = original_stack[:, registration_channel, :, :]
                             y = pos[initial_time_index,2]
                             x = pos[initial_time_index,3]
                             no_channel_pos = np.delete(pos,1,axis=1)
-                        print('no channel pos:', no_channel_pos.shape)
                         sizey = real_roi_sy[roi_idx]
                         sizex = real_roi_sx[roi_idx]
                         if register_entire_image: #TODO change the function select_rois_from_stack to effectively get registration of entire image
@@ -295,8 +290,6 @@ def register_rois(viewer: Viewer, image: Image,
                                                                       [int(sizey)], [int(sizex)])
                                 registered_images.append(registered)
                             registered = np.swapaxes(np.asarray(registered_images),0,1)
-                            print('reg',registered.shape)
-                            print(registered)
                         registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
                         if registered_roi_name in viewer.layers:
                                 viewer.layers.remove(registered_roi_name)
