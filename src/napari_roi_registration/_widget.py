@@ -15,9 +15,9 @@ Registration of multiple ROIs is supported.
 
 """
 
-from napari_roi_registration.registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
-from napari_roi_registration.registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
-from napari_roi_registration.registration_utils import calculate_spectrum, correct_decay
+from napari_roi_registration.registration_utils_1 import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
+from napari_roi_registration.registration_utils_1 import align_with_registration, update_position, resize_stack,rescale_position, filter_images
+from napari_roi_registration.registration_utils_1 import calculate_spectrum, correct_decay
 import numpy as np
 from magicgui import magic_factory
 from napari import Viewer
@@ -27,18 +27,20 @@ import os
 from napari.qt.threading import thread_worker
 import warnings
 from skimage.measure import regionprops
+import time
 
 def max_projection(label_layer):
     '''
     Compresses a 3D label layer into a 2D array and returns the values.
     Selects the label with the highest value in case of overlap.
     '''
+    t0 = time.time()
     values = np.asarray(label_layer.data).astype(int)
+    print('time', time.time()-t0)  
     if values.ndim == 3:
         values = np.max(values, axis = 0)
     elif values.ndim == 4:
         values = np.max(values, axis = (0,1))
-        
     return(values)
     
 
@@ -206,9 +208,9 @@ def register_rois(viewer: Viewer, image: Image,
     '''
     print('Starting registration...')
     # remove registration points if present
-    label_values = max_projection(labels_layer)
-    label_colors = get_labels_color(label_values)
     labels = max_projection(labels_layer)
+    label_colors = get_labels_color(labels)
+    # labels = max_projection(labels_layer)
     initial_time_index = viewer.dims.current_step[0]
     widgets_shared_variables.initial_time_index = initial_time_index
     print('... with initial time index:', widgets_shared_variables.initial_time_index)
@@ -262,35 +264,52 @@ def register_rois(viewer: Viewer, image: Image,
                                       name = points_layer_name
                                       )
                 
-                if show_registered_stack: #TODO da cambiare
+                if show_registered_stack: #TODO
                     for roi_idx in range(roi_num):
                         pos = _centers[:,roi_idx,:]
-                        print('pos:', pos)
+                        print('pos:', pos.shape)
                         if stack_dim == 3:
                             stack = original_stack
                             y = pos[initial_time_index,1]
                             x = pos[initial_time_index,2]
                             no_channel_pos = pos
                         elif stack_dim == 4:
+                            print('original stack', original_stack.shape)
                             stack = original_stack[:, registration_channel, :, :]
                             y = pos[initial_time_index,2]
                             x = pos[initial_time_index,3]
                             no_channel_pos = np.delete(pos,1,axis=1)
-                        print('no channel pos:', no_channel_pos)
-                        sizey = real_roi_sy[roi_idx] 
+                        print('no channel pos:', no_channel_pos.shape)
+                        sizey = real_roi_sy[roi_idx]
                         sizex = real_roi_sx[roi_idx]
-                        if register_entire_image:
-                            sizex = min(sx-x,x)*2
+                        if register_entire_image: #TODO change the function select_rois_from_stack to effectively get registration of entire image
+                            sizex = min(sx-x,x)*2 
                             sizey = min(sy-y,y)*2
-                        registered = select_rois_from_stack(stack, no_channel_pos, 
-                                                              [int(sizey)], [int(sizex)])
+                        if stack_dim == 3:
+                            registered = select_rois_from_stack(stack, no_channel_pos, 
+                                                                  [int(sizey)], [int(sizex)])
+                        elif stack_dim == 4:
+                            registered_images = []
+                            for c_idx in range(ch_num):
+                                registered = select_rois_from_stack(original_stack[:,c_idx,:,:], no_channel_pos, 
+                                                                      [int(sizey)], [int(sizex)])
+                                registered_images.append(registered)
+                            registered = np.swapaxes(np.asarray(registered_images),0,1)
+                            print('reg',registered.shape)
+                            print(registered)
                         registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
                         if registered_roi_name in viewer.layers:
                                 viewer.layers.remove(registered_roi_name)
                         viewer.add_image(np.array(registered), name= registered_roi_name)
-            
+                        registered = select_rois_from_stack(stack, no_channel_pos, 
+                                                            [int(sizey)], [int(sizex)])
+                        registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
+                        if registered_roi_name in viewer.layers:
+                                viewer.layers.remove(registered_roi_name)
+                        viewer.add_image(np.array(registered), name= registered_roi_name)
+                
                 print('... ending registration.')
-            
+        
         @thread_worker(connect={'returned':add_rois})
         def _register_rois():    
             
@@ -355,7 +374,7 @@ def calculate_intensity(image:Image,
     if original_stack.ndim == 3:
         stack = original_stack
         st, sy, sx = stack.shape
-        new_locations = np.insert(locations,1,np.full((1,st),channel),axis=1)
+        new_locations = np.insert(locations,1,channel,axis=1)
         no_channel_locations = locations
     elif original_stack.ndim == 4:
         st, sc, sy, sx = original_stack.shape
