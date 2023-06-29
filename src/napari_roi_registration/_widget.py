@@ -170,29 +170,30 @@ def create_rectangles(centers, sys, sxs):
 
 
 
-def registration_init(reg_widget: FunctionGui):
-    @reg_widget.image.changed.connect
+def init_the_widget(this_widget: FunctionGui):
+    @this_widget.image.changed.connect
     def _on_image_changed(image: Image):
         """
-        Function to be executed on image change. 
+        Function to be executed on image change on the registration or processing widget. 
         Sets the registration channel maximum value to the number of channels available in the selected image layer 
         """
         data = image.data 
         stack_dim = data.ndim
         if stack_dim == 3:
-            reg_widget.registration_channel.value = 0
-            reg_widget.registration_channel.visible = False
+            this_widget.selected_channel.value = 0
+            this_widget.selected_channel.visible = False
         elif stack_dim == 4:
-            reg_widget.registration_channel.visible = True
-            reg_widget.registration_channel.max = data.shape[1]-1
+            this_widget.selected_channel.visible = True
+            this_widget.selected_channel.max = data.shape[1]-1
+            
     
 @magic_factory(call_button="Register ROIs",
-           widget_init=registration_init,
-           registration_channel={'visible':False},
+           widget_init=init_the_widget,
+           selected_channel={'visible':False},
            mode={"choices":['Translation','Affine','Euclidean','Homography']})
 def register_rois(viewer: Viewer, image: Image,
                     labels_layer: Labels,
-                    registration_channel:int = 0,
+                    selected_channel:int = 0,
                     mode: str = 'Translation',
                     median_filter_size:int = 3,
                     scale = 0.5,
@@ -244,11 +245,11 @@ def register_rois(viewer: Viewer, image: Image,
         time_frames_num, sy, sx = stack.shape
     elif stack_dim == 4:
         time_frames_num,ch_num, sy, sx = original_stack.shape
-        stack = original_stack [:, registration_channel,:,:]
-    print('... in channel:', registration_channel)
+        stack = original_stack [:, selected_channel,:,:]
+    print('... in channel:', selected_channel)
     real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
                                                                         initial_time_index,
-                                                                        registration_channel,
+                                                                        selected_channel,
                                                                         bbox_zoom)
     roi_num = len(real_initial_positions)
     
@@ -266,8 +267,8 @@ def register_rois(viewer: Viewer, image: Image,
             rectangles = rectangles.reshape((roi_num*time_frames_num,4,4))
             centers = _centers.reshape((roi_num*time_frames_num,4))
         color_array= numpy.matlib.repmat(label_colors,len(rectangles)//roi_num,1)
-        points_layer_name = f'centroids_{image.name}_{registration_channel}'
-        rectangles_name = f'rectangles_{image.name}_{registration_channel}'
+        points_layer_name = f'centroids_{image.name}_{selected_channel}'
+        rectangles_name = f'rectangles_{image.name}_{selected_channel}'
         if points_layer_name in viewer.layers:
             viewer.layers.remove(points_layer_name)
         if rectangles_name in viewer.layers:
@@ -295,7 +296,7 @@ def register_rois(viewer: Viewer, image: Image,
                     x = pos[initial_time_index,2]
                     no_channel_pos = pos
                 elif stack_dim == 4:
-                    stack = original_stack[:, registration_channel, :, :]
+                    stack = original_stack[:, selected_channel, :, :]
                     y = pos[initial_time_index,2]
                     x = pos[initial_time_index,3]
                     no_channel_pos = np.delete(pos,1,axis=1)
@@ -410,7 +411,7 @@ def calculate_intensity(image:Image,
             intensity = np.mean(selected)
             intensities[time_idx, roi_idx] = intensity
 
-    return intensities, initial_time_index
+    return intensities
 
 
 def measure_displacement(image, roi_num, points, channel):
@@ -443,11 +444,14 @@ def measure_displacement(image, roi_num, points, channel):
     return xy, deltar, dxy, dr
 
 
-@magic_factory(call_button="Process registered ROIs")
-def process_rois(viewer: Viewer, image: Image, 
+@magic_factory(call_button="Process registered ROIs",
+               widget_init=init_the_widget,
+               selected_channel={'visible':False})
+def process_rois(viewer: Viewer, 
+                 image: Image,
                  registered_points: Points,
                  labels_layer: Labels,
-                 processing_channel:int = 0,
+                 selected_channel:int = 0,
                  correct_photobleaching: bool = False,
                  plot_results:bool = True,
                  save_results:bool = False,
@@ -467,16 +471,17 @@ def process_rois(viewer: Viewer, image: Image,
     correct_photobleaching: bool
         If True photobleaching correction is appleid to the the intensities.
     plot_results:bool
-        If Ture, shows the plots of the collected data with matplotlib in the console.
+        If True, shows the plots of the collected data with matplotlib in the console.
     save_results:bool
         If True, creates an excel file with processing results.
     path: str
         Folder with filename of the excel file. 
     '''
-    
+    if registered_points is None or labels_layer is None or image is None:
+        return
     warnings.filterwarnings('ignore')
     print('Starting processing ...')
-    print('... in channel:', processing_channel)
+    print('... in channel:', selected_channel)
     try:
         process_rois.enabled = False
         original_stack = image.data
@@ -486,14 +491,14 @@ def process_rois(viewer: Viewer, image: Image,
             time_frames_num, sy, sx = stack.shape
         elif original_stack.ndim == 4:
             time_frames_num, ch_num, sy, sx = original_stack.shape
-            stack = original_stack[:, processing_channel, :, :]
+            stack = original_stack[:, selected_channel, :, :]
             
         locations = registered_points.data
         roi_num = len(locations) // time_frames_num
-        intensities, initial_time_index = calculate_intensity(image, roi_num, 
+        intensities = calculate_intensity(image, roi_num, 
                                           registered_points,
-                                          labels_layer, processing_channel)
-        yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points, processing_channel)
+                                          labels_layer, selected_channel)
+        yx, deltar, dyx, dr = measure_displacement(image, roi_num, registered_points, selected_channel)
         
         if correct_photobleaching:
             intensities = correct_decay(intensities)
