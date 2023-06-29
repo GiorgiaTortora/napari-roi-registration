@@ -20,6 +20,7 @@ from .registration_utils import align_with_registration, update_position, resize
 from .registration_utils import calculate_spectrum, correct_decay
 import numpy as np
 from magicgui import magic_factory
+from magicgui.widgets import FunctionGui
 from napari import Viewer
 from napari.layers import Image, Points, Labels
 import pathlib
@@ -166,10 +167,29 @@ def create_rectangles(centers, sys, sxs):
                       ]
         rectangles.append(rectangle)
     return np.array(rectangles)
-        
+
+
+
+def registration_init(reg_widget: FunctionGui):
+    @reg_widget.image.changed.connect
+    def _on_image_changed(image: Image):
+        """
+        Function to be executed on image change. 
+        Sets the registration channel maximum value to the number of channels available in the selected image layer 
+        """
+        data = image.data 
+        stack_dim = data.ndim
+        if stack_dim == 3:
+            reg_widget.registration_channel.value = 0
+            reg_widget.registration_channel.visible = False
+        elif stack_dim == 4:
+            reg_widget.registration_channel.visible = True
+            reg_widget.registration_channel.max = data.shape[1]-1
     
 @magic_factory(call_button="Register ROIs",
-           mode={"choices": ['Translation','Affine','Euclidean','Homography']})
+           widget_init=registration_init,
+           registration_channel={'visible':False},
+           mode={"choices":['Translation','Affine','Euclidean','Homography']})
 def register_rois(viewer: Viewer, image: Image,
                     labels_layer: Labels,
                     registration_channel:int = 0,
@@ -204,6 +224,10 @@ def register_rois(viewer: Viewer, image: Image,
     show_registered_stack:bool
         If True,  shows the registered stacks as new image layers.
     '''
+    
+    if labels_layer is None or image is None:
+        return
+    
     print('Starting registration...')
     # remove registration points if present
     labels = max_projection(labels_layer)
@@ -214,138 +238,131 @@ def register_rois(viewer: Viewer, image: Image,
     print('... with initial time index:', widgets_shared_variables.initial_time_index)
     original_stack = np.asarray(image.data)
     stack_dim = original_stack.ndim
-    try:
-        if stack_dim == 3:
-            stack = original_stack
-            time_frames_num, sy, sx = stack.shape
-        elif stack_dim == 4:
-            time_frames_num,ch_num, sy, sx = original_stack.shape
-            stack = original_stack [:, registration_channel,:,:]
-        print('... in channel:', registration_channel)
-        real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
-                                                                          initial_time_index,
-                                                                          registration_channel,
-                                                                          bbox_zoom)
-        roi_num = len(real_initial_positions)
-        
-        def add_rois(params): 
-            
-                import numpy.matlib
-                rectangles = params[0]
-                _centers = params[1]
-                if stack_dim == 3:
-                    rectangles = np.delete(rectangles,1,axis=3)
-                    _centers = np.delete(_centers,1,axis=2)
-                    rectangles = rectangles.reshape((roi_num*time_frames_num,4,3))
-                    centers = _centers.reshape((roi_num*time_frames_num,3))
-                elif stack_dim == 4:
-                    rectangles = rectangles.reshape((roi_num*time_frames_num,4,4))
-                    centers = _centers.reshape((roi_num*time_frames_num,4))
-                color_array= numpy.matlib.repmat(label_colors,len(rectangles)//roi_num,1)
-                points_layer_name = f'centroids_{image.name}_{registration_channel}'
-                rectangles_name = f'rectangles_{image.name}_{registration_channel}'
-                if points_layer_name in viewer.layers:
-                    viewer.layers.remove(points_layer_name)
-                if rectangles_name in viewer.layers:
-                    viewer.layers.remove(rectangles_name)
-                shapes = viewer.add_shapes(np.array(rectangles[0]),
-                                  edge_width=3,
-                                  edge_color=color_array[0],
-                                  face_color=[1,1,1,0],
-                                  name = rectangles_name
-                                  )
-                shapes.add_rectangles(np.array(rectangles[1:]),
-                                        edge_color=color_array[1:])
-                viewer.add_points(np.array(centers),
-                                      edge_color='green',
-                                      face_color=[1,1,1,0],
-                                      name = points_layer_name
-                                      )
-                
-                if show_registered_stack: #TODO
-                    for roi_idx in range(roi_num):
-                        pos = _centers[:,roi_idx,:]
-                        if stack_dim == 3:
-                            stack = original_stack
-                            y = pos[initial_time_index,1]
-                            x = pos[initial_time_index,2]
-                            no_channel_pos = pos
-                        elif stack_dim == 4:
-                            stack = original_stack[:, registration_channel, :, :]
-                            y = pos[initial_time_index,2]
-                            x = pos[initial_time_index,3]
-                            no_channel_pos = np.delete(pos,1,axis=1)
-                        sizey = real_roi_sy[roi_idx]
-                        sizex = real_roi_sx[roi_idx]
-                        if register_entire_image: #TODO change the function select_rois_from_stack to effectively get registration of entire image
-                            sizex = min(sx-x,x)*2 
-                            sizey = min(sy-y,y)*2
-                        if stack_dim == 3:
-                            registered = select_rois_from_stack(stack, no_channel_pos, 
-                                                                  [int(sizey)], [int(sizex)])
-                        elif stack_dim == 4:
-                            registered_images = []
-                            for c_idx in range(ch_num):
-                                registered = select_rois_from_stack(original_stack[:,c_idx,:,:], no_channel_pos, 
-                                                                      [int(sizey)], [int(sizex)])
-                                registered_images.append(registered)
-                            registered = np.swapaxes(np.asarray(registered_images),0,1)
-                        registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
-                        if registered_roi_name in viewer.layers:
-                                viewer.layers.remove(registered_roi_name)
-                        viewer.add_image(np.array(registered), name= registered_roi_name)
-                        registered = select_rois_from_stack(stack, no_channel_pos, 
-                                                            [int(sizey)], [int(sizex)])
-                        registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
-                        if registered_roi_name in viewer.layers:
-                                viewer.layers.remove(registered_roi_name)
-                        viewer.add_image(np.array(registered), name= registered_roi_name)
-                
-                print('... ending registration.')
-        
-        @thread_worker(connect={'returned':add_rois})
-        def _register_rois():    
-            
-            warnings.filterwarnings('ignore')        
-            resized = resize_stack(stack, scale)
-            resized, _vmin, _vmax = normalize_stack(resized)
-            image0 = resized[initial_time_index,...]
-            
-            initial_positions = rescale_position(real_initial_positions,scale)
-            roi_sy = [int(ri*scale) for ri in real_roi_sy]
-            roi_sx = [int(ri*scale) for ri in real_roi_sx]
-            previous_rois = select_rois_from_image(image0, initial_positions, roi_sy,roi_sx)
-            previous_rois = filter_images(previous_rois, median_filter_size)
     
-            rectangles = np.zeros([time_frames_num,roi_num,4,4]) 
-            centers = np.zeros([time_frames_num,roi_num,4])
-              # register forwards
-            next_positions = initial_positions.copy()
-            real_next_positions = rescale_position(next_positions,1/scale)    
-            centers[initial_time_index, :, :] = np.array(real_next_positions)
-            rectangles[initial_time_index, :, :, :] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
-            for t_index in range(initial_time_index+1, time_frames_num, 1):
-                next_rois = select_rois_from_image(resized[t_index, ...], next_positions, roi_sy, roi_sx)
-                next_rois = filter_images(next_rois, median_filter_size)
-                dx, dy, _wm = align_with_registration(next_rois, previous_rois, mode)
-                next_positions = update_position(next_positions, dz=1, dx_list=dx, dy_list=dy)
-                real_next_positions = rescale_position(next_positions, 1/scale)
-                centers[t_index,:,:] = np.array(real_next_positions)
-                rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
-            # register backwards
-            next_positions = initial_positions.copy()
-            for t_index in range(initial_time_index-1, -1, -1):
-                next_rois = select_rois_from_image(resized[t_index, ...], next_positions, roi_sy, roi_sx)
-                next_rois = filter_images(next_rois, median_filter_size)
-                dx, dy, _wm = align_with_registration(next_rois, previous_rois, mode)
-                next_positions = update_position(next_positions, dz=-1, dx_list=dx, dy_list=dy)
-                real_next_positions = rescale_position(next_positions, 1/scale)
-                centers[t_index,:,:] = np.array(real_next_positions)
-                rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
-            return (rectangles, centers)
-        _register_rois()
-    except:
-        print(f'Ops! The max value for channel axis is {ch_num-1}, you chose {registration_channel}')
+    if stack_dim == 3:
+        stack = original_stack
+        time_frames_num, sy, sx = stack.shape
+    elif stack_dim == 4:
+        time_frames_num,ch_num, sy, sx = original_stack.shape
+        stack = original_stack [:, registration_channel,:,:]
+    print('... in channel:', registration_channel)
+    real_initial_positions, real_roi_sy, real_roi_sx = get_rois_props(labels, 
+                                                                        initial_time_index,
+                                                                        registration_channel,
+                                                                        bbox_zoom)
+    roi_num = len(real_initial_positions)
+    
+    def add_rois(params): 
+        
+        import numpy.matlib
+        rectangles = params[0]
+        _centers = params[1]
+        if stack_dim == 3:
+            rectangles = np.delete(rectangles,1,axis=3)
+            _centers = np.delete(_centers,1,axis=2)
+            rectangles = rectangles.reshape((roi_num*time_frames_num,4,3))
+            centers = _centers.reshape((roi_num*time_frames_num,3))
+        elif stack_dim == 4:
+            rectangles = rectangles.reshape((roi_num*time_frames_num,4,4))
+            centers = _centers.reshape((roi_num*time_frames_num,4))
+        color_array= numpy.matlib.repmat(label_colors,len(rectangles)//roi_num,1)
+        points_layer_name = f'centroids_{image.name}_{registration_channel}'
+        rectangles_name = f'rectangles_{image.name}_{registration_channel}'
+        if points_layer_name in viewer.layers:
+            viewer.layers.remove(points_layer_name)
+        if rectangles_name in viewer.layers:
+            viewer.layers.remove(rectangles_name)
+        shapes = viewer.add_shapes(np.array(rectangles[0]),
+                            edge_width=3,
+                            edge_color=color_array[0],
+                            face_color=[1,1,1,0],
+                            name = rectangles_name
+                            )
+        shapes.add_rectangles(np.array(rectangles[1:]),
+                                edge_color=color_array[1:])
+        viewer.add_points(np.array(centers),
+                                edge_color='green',
+                                face_color=[1,1,1,0],
+                                name = points_layer_name
+                                )
+        
+        if show_registered_stack: 
+            for roi_idx in range(roi_num):
+                pos = _centers[:,roi_idx,:]
+                if stack_dim == 3:
+                    stack = original_stack
+                    y = pos[initial_time_index,1]
+                    x = pos[initial_time_index,2]
+                    no_channel_pos = pos
+                elif stack_dim == 4:
+                    stack = original_stack[:, registration_channel, :, :]
+                    y = pos[initial_time_index,2]
+                    x = pos[initial_time_index,3]
+                    no_channel_pos = np.delete(pos,1,axis=1)
+                sizey = real_roi_sy[roi_idx]
+                sizex = real_roi_sx[roi_idx]
+                if register_entire_image: #TODO change the function select_rois_from_stack to effectively get registration of entire image
+                    sizex = min(sx-x,x)*2 
+                    sizey = min(sy-y,y)*2
+                if stack_dim == 3:
+                    registered_image = select_rois_from_stack(original_stack, no_channel_pos, 
+                                                            [int(sizey)], [int(sizex)])
+                    registered_data = np.asarray(registered_image)
+                elif stack_dim == 4:
+                    registered_images = []
+                    for c_idx in range(ch_num):
+                        registered_image = select_rois_from_stack(original_stack[:,c_idx,:,:], no_channel_pos, 
+                                                                [int(sizey)], [int(sizex)])
+                        registered_images.append(registered_image)
+                    registered_data = np.swapaxes(np.asarray(registered_images),0,1)
+                registered_roi_name= f'registered_{image.name}_roi{roi_idx}'
+                if registered_roi_name in viewer.layers:
+                        viewer.layers.remove(registered_roi_name)
+                viewer.add_image(registered_data, name= registered_roi_name)
+        
+        print('... ending registration.')
+        
+    @thread_worker(connect={'returned':add_rois})
+    def _register_rois():    
+        
+        warnings.filterwarnings('ignore')        
+        resized = resize_stack(stack, scale)
+        resized, _vmin, _vmax = normalize_stack(resized)
+        image0 = resized[initial_time_index,...]
+        
+        initial_positions = rescale_position(real_initial_positions,scale)
+        roi_sy = [int(ri*scale) for ri in real_roi_sy]
+        roi_sx = [int(ri*scale) for ri in real_roi_sx]
+        previous_rois = select_rois_from_image(image0, initial_positions, roi_sy,roi_sx)
+        previous_rois = filter_images(previous_rois, median_filter_size)
+
+        rectangles = np.zeros([time_frames_num,roi_num,4,4]) 
+        centers = np.zeros([time_frames_num,roi_num,4])
+            # register forwards
+        next_positions = initial_positions.copy()
+        real_next_positions = rescale_position(next_positions,1/scale)    
+        centers[initial_time_index, :, :] = np.array(real_next_positions)
+        rectangles[initial_time_index, :, :, :] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
+        for t_index in range(initial_time_index+1, time_frames_num, 1):
+            next_rois = select_rois_from_image(resized[t_index, ...], next_positions, roi_sy, roi_sx)
+            next_rois = filter_images(next_rois, median_filter_size)
+            dx, dy, _wm = align_with_registration(next_rois, previous_rois, mode)
+            next_positions = update_position(next_positions, dz=1, dx_list=dx, dy_list=dy)
+            real_next_positions = rescale_position(next_positions, 1/scale)
+            centers[t_index,:,:] = np.array(real_next_positions)
+            rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
+        # register backwards
+        next_positions = initial_positions.copy()
+        for t_index in range(initial_time_index-1, -1, -1):
+            next_rois = select_rois_from_image(resized[t_index, ...], next_positions, roi_sy, roi_sx)
+            next_rois = filter_images(next_rois, median_filter_size)
+            dx, dy, _wm = align_with_registration(next_rois, previous_rois, mode)
+            next_positions = update_position(next_positions, dz=-1, dx_list=dx, dy_list=dy)
+            real_next_positions = rescale_position(next_positions, 1/scale)
+            centers[t_index,:,:] = np.array(real_next_positions)
+            rectangles[t_index,:,:,:] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
+        return (rectangles, centers)
+    _register_rois()
     
 def calculate_intensity(image:Image,
                         roi_num:int,
