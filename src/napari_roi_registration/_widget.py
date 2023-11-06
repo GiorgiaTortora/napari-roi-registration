@@ -15,9 +15,9 @@ Registration of multiple ROIs is supported.
 
 """
 
-from .registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
-from .registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
-from .registration_utils import calculate_spectrum, correct_decay
+from napari_roi_registration.registration_utils import plot_data, save_in_excel, normalize_stack, select_rois_from_stack, select_rois_from_image
+from napari_roi_registration.registration_utils import align_with_registration, update_position, resize_stack,rescale_position, filter_images
+from napari_roi_registration.registration_utils import calculate_spectrum, correct_decay
 import numpy as np
 from magicgui import magic_factory
 from magicgui.widgets import FunctionGui
@@ -286,7 +286,6 @@ def register_rois(viewer: Viewer, image: Image,
                                 face_color=[1,1,1,0],
                                 name = points_layer_name
                                 )
-        
         if show_registered_stack: 
             for roi_idx in range(roi_num):
                 pos = _centers[:,roi_idx,:]
@@ -325,7 +324,6 @@ def register_rois(viewer: Viewer, image: Image,
         
     @thread_worker(connect={'returned':add_rois})
     def _register_rois():    
-        
         warnings.filterwarnings('ignore')        
         resized = resize_stack(stack, scale)
         resized, _vmin, _vmax = normalize_stack(resized)
@@ -341,7 +339,7 @@ def register_rois(viewer: Viewer, image: Image,
         centers = np.zeros([time_frames_num,roi_num,4])
             # register forwards
         next_positions = initial_positions.copy()
-        real_next_positions = rescale_position(next_positions,1/scale)    
+        real_next_positions = rescale_position(next_positions,1/scale)  
         centers[initial_time_index, :, :] = np.array(real_next_positions)
         rectangles[initial_time_index, :, :, :] = create_rectangles(real_next_positions, real_roi_sy, real_roi_sx)
         for t_index in range(initial_time_index+1, time_frames_num, 1):
@@ -446,7 +444,8 @@ def measure_displacement(image, roi_num, points, channel):
 
 @magic_factory(call_button="Process registered ROIs",
                widget_init=init_the_widget,
-               selected_channel={'visible':False})
+               selected_channel={'visible':False},
+               saving_folder={'mode': 'd'})
 def process_rois(viewer: Viewer, 
                  image: Image,
                  registered_points: Points,
@@ -455,7 +454,8 @@ def process_rois(viewer: Viewer,
                  correct_photobleaching: bool = False,
                  plot_results:bool = True,
                  save_results:bool = False,
-                 path: pathlib.Path = os.getcwd()+'\\temp.xlsx'
+                 saving_folder: pathlib.Path = os.getcwd(),
+                 saving_filename:str = 'temp'
                  ):
     
     '''
@@ -477,6 +477,7 @@ def process_rois(viewer: Viewer,
     path: str
         Folder with filename of the excel file. 
     '''
+    
     if registered_points is None or labels_layer is None or image is None:
         return
     warnings.filterwarnings('ignore')
@@ -513,7 +514,8 @@ def process_rois(viewer: Viewer,
         #directory, filename = os.path.split(path)
         #newpath = directory +'\\'+image.name
         if save_results:
-            save_in_excel(filename_xls = path,
+            filename = os.path.join(saving_folder,saving_filename +'.xlsx')
+            save_in_excel(filename,
                           sheet_name = 'Roi',
                           x = yx[...,1], 
                           y = yx[...,0],
@@ -540,7 +542,7 @@ widgets_shared_variables = Shared_variables(initial_time_index=0)
 
 
 if __name__ == '__main__':
-    
+
     import napari
     viewer = napari.Viewer()
     background_widget = subtract_background()

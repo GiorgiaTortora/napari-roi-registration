@@ -404,7 +404,7 @@ def save_in_excel(filename_xls, sheet_name, **kwargs):
         table.to_excel(writer, f'{sheet_name}_{sheet_idx}')
         # print(table)
         
-    writer.save()
+    writer.close()
     
     
     
