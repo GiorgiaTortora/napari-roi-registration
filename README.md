@@ -46,7 +46,7 @@ To install latest development version :
 
 ## Usage
 
-A detailed guide which shows in detail how to use the widgets of the napari-roi-registration plugin and how to properly choose the parameters can be found [here].
+A detailed guide which shows how to use the widgets of the napari-roi-registration plugin and how to properly choose the parameters can be found [here].
 
 ### Registration Widget
 

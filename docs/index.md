@@ -52,7 +52,7 @@ If you open more than one image, select the image on which you want to perform t
 
 2. Create a new labels layer and draw labels where you want to select a region of interest. Be careful with the colours of the labels. Each colour represents a different label which will correspond to a different ROI. If you use the same colour to label two different parts of an image, they will be considered as a single region of interest and will be registered in the same bounding box.  
 
-![raw](github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/double_label.png)
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/double_label.png)
 
 Moreover, labels are not supposed to overlap. If two labels are overlapping, only the colour that corresponds to the highest number will be considered in the overlapped area.
 
