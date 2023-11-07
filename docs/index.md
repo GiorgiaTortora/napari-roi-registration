@@ -9,8 +9,8 @@ The Background Widget allows a pre-processing of data, and it is typically usefu
 
 ### List of parameters
 
-image: The image stack (time, channel, y, x) to be corrected.
-labels: The labels layer where the user drew the label which will be used to calculate the background.
+**image**: The image stack (time, channel, y, x) to be corrected.  
+**labels**: The labels layer where the user drew the label which will be used to calculate the background.
 
 ### How to use the Background Widget
 
