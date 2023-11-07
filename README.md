@@ -46,7 +46,7 @@ To install latest development version :
 
 ## Usage
 
-You can find the detailed guide at https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/docs/napari-roi-registration_guide.pdf
+Detailed instructions on how to use the napari-roi-registration plugin can be found at https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/docs/napari-roi-registration_guide.pdf.
 
 ### Registration Widget
 
