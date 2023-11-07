@@ -46,7 +46,7 @@ To install latest development version :
 
 ## Usage
 
-Detailed instructions on how to use the napari-roi-registration plugin can be found at https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/docs/napari-roi-registration_guide.pdf.
+A detailed guide which shows in detail how to use the widgets of the napari-roi-registration plugin and how to properly choose the parameters can be found [here].
 
 ### Registration Widget
 
@@ -99,6 +99,7 @@ If you encounter any problems, please [file an issue] along with a detailed desc
 [Apache Software License 2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [Mozilla Public License 2.0]: https://www.mozilla.org/media/MPL/2.0/index.txt
 [cookiecutter-napari-plugin]: https://github.com/napari/cookiecutter-napari-plugin
+[here]: https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/docs/index.md
 
 [file an issue]: https://github.com/GiorgiaTortora/napari-roi-registration/issues
 
