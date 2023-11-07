@@ -15,3 +15,5 @@ labels: The labels layer where the user drew the label which will be used to cal
 ### How to use the Background Widget
 
 1. Open the image you want to correct in the napari viewer. If you open more than one image in the viewer, select the image you want to correct in the image menu of the Background Widget. 
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/background.png)
