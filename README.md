@@ -46,6 +46,8 @@ To install latest development version :
 
 ## Usage
 
+You can find the detailed guide at https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/docs/napari-roi-registration_guide.pdf
+
 ### Registration Widget
 
 1. Create a new Labels layer and draw one or more labels where you want to select a ROI (Region Of Interest). Each color in the same Labels layer represents a different label which will correspond to a different ROI.
