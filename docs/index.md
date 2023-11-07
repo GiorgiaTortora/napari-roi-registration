@@ -16,8 +16,10 @@ The Background Widget allows a pre-processing of data, and it is typically usefu
 
 1. Open the image you want to correct in the napari viewer. If you open more than one image in the viewer, select the image you want to correct in the image menu of the Background Widget. 
 
+<figure markdown>
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/before_sub.png)
 <figcaption>In the red ellipse on top right, the image menu of the background widget.</figcaption>
+</figure>
 
 2. Create a new labels layer and draw a label on one frame of your stack on the area where you want to calculate the background. The background will be calculated as the mean intensity of the pixels under the drawn label.
 
