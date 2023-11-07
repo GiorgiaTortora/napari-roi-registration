@@ -16,12 +16,17 @@ The Background Widget allows a pre-processing of data, and it is typically usefu
 
 1. Open the image you want to correct in the napari viewer. If you open more than one image in the viewer, select the image you want to correct in the image menu of the Background Widget. 
 
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/before_sub.png)
+<figcaption>In the red ellipse on top right, the image menu of the background widget.</figcaption>
+
 2. Create a new labels layer and draw a label on one frame of your stack on the area where you want to calculate the background. The background will be calculated as the mean intensity of the pixels under the drawn label.
 
 ![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/background.png)
 
 3. Press the **Subtract background** button. The mean intensity value will be subtracted from all frames of the dataset. If you are dealing with multichannel data, a different background value is calculated for each channel considering the pixels of the image under the label in each channel. 
 A new image layer will appear in the viewer. This layer contains the stack of corrected images.
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/after_sub.png)
 
 ## Registration Widget
 
@@ -44,15 +49,23 @@ The Registration Widget executes registration of a non-limited number of user-de
 1. Open the image you want to register in Napari. If you have already corrected your image using the background widget, your image will already be in the napari viewer under the name <original name of the image>_ corrected.  
 If you open more than one image, select the image on which you want to perform the registration in the image menu of the Registration Widget.
 
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/before_reg.png)
+
 2. Create a new labels layer and draw labels where you want to select a region of interest. Be careful with the colours of the labels. Each colour represents a different label which will correspond to a different ROI. If you use the same colour to label two different parts of an image, they will be considered as a single region of interest and will be registered in the same bounding box.  
 
+![raw](github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/double_label.png)
+
 Moreover, labels are not supposed to overlap. If two labels are overlapping, only the colour that corresponds to the highest number will be considered in the overlapped area.
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/labels_numbers.png)
 
 The registration process starts from the currently selected frame, which is the frame visualized in the viewer when the **Register ROIs** button is pressed, no matter in which frame have been drawn the labels. The result of the registration process can change according to the starting frame. So, if you are not satisfied with the obtained registration, try to change the starting frame simply changing the frame that you are visualizing.  
 If **show registered stack** is selected, at the end of the registration process a new image layer containing the registered ROI stack will be created for each label.  
 If **register entire image** is selected, the entire image will be registered, not only the portion of image in the bounding box.
 
 3. Press the **Register ROIs** button: registration will be performed. When the registration process ends, two new layers will appear in the viewer. One layer contains the centroids of the drawn labels while the other contains the bounding boxes enclosing the ROIs.
+
+![raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/after_reg.png)
 
 ## Processing Widget
 
@@ -74,7 +87,9 @@ The Processing Widget measures ROIs displacements and extracts the average inten
 
 1. Pressing the **Process registered ROIs** button, the registered ROIs will be analysed. The intensity and the displacement of the registered ROIs will be calculated. Intensity is calculated considering only the pixels which are inside the bounding box and under the label. Pixels which are inside the bounding box but aren’t under the label will not contribute to calculation of intensity.   
 If **plot results** is selected, plots of displacement vs time index and mean intensity vs time index will appear in the console.  
-Choosing the **save results** option, an excel file containing ROIs positions, displacements, and intensities will be saved.  
+Choosing the **save results** option, an excel file containing ROIs positions, displacements, and intensities will be saved. 
+
+[raw](https://github.com/GiorgiaTortora/napari-roi-registration/blob/main/images/plots.png) 
 
 
 
