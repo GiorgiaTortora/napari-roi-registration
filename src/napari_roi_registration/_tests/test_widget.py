@@ -1,6 +1,6 @@
-from napari_roi_registration import register_rois, subtract_background
+from napari_roi_registration import register_rois,subtract_background
 import numpy as np
-from napari.layers import Points, Image
+from napari.layers import Points,Image
 
 def test_subtract_background(make_napari_viewer, capsys):
     
