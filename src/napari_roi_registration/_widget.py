@@ -208,9 +208,11 @@ def register_rois(viewer: Viewer, image: Image,
     Parameters
     ----------
     image: napari.layers.Image
-        The image stack (time,y,x) to be registered.
+        The image stack (time,channel,y,x) to be registered.
     labels_layer: Labels
         The labels will define the rectangular ROIs to be registered.
+    selected_channel:int
+        The channel on which registration will be performed.
     mode: str
         The type of cv2 registration.
     median_filter_size:int
@@ -219,7 +221,7 @@ def register_rois(viewer: Viewer, image: Image,
         Rescaling factor of the image for the registation
         Does not affect the registered image scale.
     bbox_zoom: int
-        The bounding boxes encloding the ROIs are zoomed by this factor.
+        The bounding boxes enclosing the ROIs are zoomed by this factor.
     register_entire_image:bool
         If True, the entire image is registered around the bounding box.
     show_registered_stack:bool
@@ -468,14 +470,18 @@ def process_rois(viewer: Viewer,
         The center of the ROIs to take into account during processing
     labels_layer: napari.layers.Labels
         The labels previously used for registration. The intensity is calculated on the labels only. 
+    selected_channel:int
+        The channel to be considered for processing of data.
     correct_photobleaching: bool
         If True photobleaching correction is appleid to the the intensities.
     plot_results:bool
         If True, shows the plots of the collected data with matplotlib in the console.
     save_results:bool
         If True, creates an excel file with processing results.
-    path: str
-        Folder with filename of the excel file. 
+    saving foldere: str
+        Folder to save the file to.
+    saving_filename:
+        Name of the file to save.
     '''
     
     if registered_points is None or labels_layer is None or image is None:
