@@ -410,7 +410,8 @@ def calculate_intensity(image:Image,
             selected = roi[mask_indexes]
             intensity = np.mean(selected)
             intensities[time_idx, roi_idx] = intensity
-
+    widgets_shared_variables.intensity_array = intensities
+    
     return intensities
 
 
@@ -537,15 +538,48 @@ def process_rois(viewer: Viewer,
     finally: 
         process_rois.enabled = True
     print(f'... processed {time_frames_num} frames.')
+    
+def calculate_velocity(ref_t, coordinates):
+    
+    velocities = []
+    dataset_num = len(coordinates)
+    
+    for dataset_idx in range(dataset_num):
+        
+        dataset_velocities = []
+        
+        for roi_idx in range(len(coordinates[dataset_idx])-1):
+            
+            t_roi_0 = ref_t[dataset_idx][roi_idx]
+            t_roi_1 = ref_t[dataset_idx][roi_idx +1]
+            distance  = np.sqrt( np.sum((coordinates[dataset_idx][roi_idx+1][t_roi_1]-coordinates[dataset_idx][roi_idx][t_roi_0])**2))
+            delta_t = t_roi_1 - t_roi_0
+            velocity = distance/delta_t
+            dataset_velocities.append(velocity)
+            
+        velocities.append(dataset_velocities)
+    
+    return velocities
 
+@magic_factory(call_button="Calculate velocity",
+               # widget_init=init_the_widget,
+               saving_folder={'mode': 'd'})
+def velocity(viewer: Viewer, 
+                 save_results:bool = False,
+                 saving_folder: pathlib.Path = os.getcwd(),
+                 saving_filename:str = 'temp'
+                 ):
+    intensity_array = widgets_shared_variables.intensity_array
+    print(intensity_array.shape)
 
 from dataclasses import dataclass
 @dataclass
 class Shared_variables:
     initial_time_index: int = 0
-
+    intensity_array: np.ndarray = np.zeros((10,5))
+    
 widgets_shared_variables = Shared_variables(initial_time_index=0)  
-
+widgets_shared_variables = Shared_variables(intensity_array = np.zeros((10,5)))
 
 if __name__ == '__main__':
 
@@ -554,11 +588,14 @@ if __name__ == '__main__':
     background_widget = subtract_background()
     register_widget = register_rois()
     processing_widget = process_rois()
+    velocity_widget = velocity()
     viewer.window.add_dock_widget(background_widget, name = 'Background Subtraction',
                                   area='right', add_vertical_stretch=True)
     viewer.window.add_dock_widget(register_widget, name = 'ROIs Registration',
                                   area='right', add_vertical_stretch=True)
     viewer.window.add_dock_widget(processing_widget, name = 'Processing',
+                                  area='right')
+    viewer.window.add_dock_widget(velocity_widget, name = 'Velocity',
                                   area='right')
     warnings.filterwarnings('ignore')
     napari.run() 
